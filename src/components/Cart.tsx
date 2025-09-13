@@ -1,12 +1,15 @@
 // components/Cart.tsx
 "use client";
 
+import { useState } from "react";
 import { useCart, type CartItem } from "@/context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
 import { FiTrash2, FiArrowLeft, FiMinus, FiPlus, FiX } from "react-icons/fi";
+import ConfirmOrderModal from "./ConfirmOrderModal";
 
 export default function Cart() {
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
 
     const total = cart
@@ -14,7 +17,7 @@ export default function Cart() {
             const price = Number(item.price) || 0;
             const itemPrice =
                 item.unitType === "grams"
-                    ? price * (item.quantity / 500) // precio por 500g
+                    ? price * (item.quantity / 500) 
                     : price * item.quantity;
             return acc + itemPrice;
         }, 0)
@@ -29,6 +32,28 @@ export default function Cart() {
         const step = item.unitType === "grams" ? 500 : 1;
         const newQty = item.quantity - step;
         if (newQty > 0) updateQuantity(item.id, newQty);
+    };
+
+    const handleFinalizeOrder = () => {
+        const phoneNumber = "5493853023468"; // Reemplaza con tu número de WhatsApp
+        setIsModalOpen(false); // Cierra el modal
+
+        const message = `*Buenas! Quisiera hacer un pedido con los siguientes productos:*\n\n${cart
+            .map((item) => {
+                const subtotal =
+                    item.unitType === "grams"
+                        ? (Number(item.price) * (item.quantity / 500)).toFixed(2)
+                        : (Number(item.price) * item.quantity).toFixed(2);
+                const quantityDisplay = item.unitType === "grams" ? `${item.quantity}g` : `${item.quantity} u.`;
+                return `- ${item.name} (${quantityDisplay}): $${subtotal}`;
+            })
+            .join("\n")}\n\n*Precio a pagar: $${total}*`;
+
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+            message
+        )}`;
+        window.open(whatsappUrl, "_blank");
+        clearCart(); // Vacía el carrito después de redirigir
     };
 
     return (
@@ -141,10 +166,10 @@ export default function Cart() {
                             <span className="text-2xl font-bold text-green-700">${total}</span>
                         </div>
                         <button
-                            onClick={() => alert("Funcionalidad para finalizar la compra no implementada.")}
+                            onClick={() => setIsModalOpen(true)}
                             className="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition shadow-md"
                         >
-                            Finalizar Compra
+                            Finalizar Pedido
                         </button>
                         <button
                             onClick={clearCart}
@@ -154,6 +179,13 @@ export default function Cart() {
                         </button>
                     </div>
                 </>
+            )}
+
+            {isModalOpen && (
+                <ConfirmOrderModal
+                    onClose={() => setIsModalOpen(false)}
+                    onConfirm={handleFinalizeOrder}
+                />
             )}
         </div>
     );
