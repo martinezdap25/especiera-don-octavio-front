@@ -1,6 +1,7 @@
+// context/CartContext.tsx
 "use client";
 
-import { createContext, useState, useContext, ReactNode } from "react";
+import React, { createContext, useState, useContext, ReactNode } from "react";
 
 export type CartItem = {
   id: number;
@@ -25,12 +26,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const addToCart = (itemToAdd: CartItem) => {
     setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === itemToAdd.id);
+      const existingItem = prevCart.find((i) => i.id === itemToAdd.id);
       if (existingItem) {
-        return prevCart.map((item) =>
-          item.id === itemToAdd.id
-            ? { ...item, quantity: item.quantity + itemToAdd.quantity }
-            : item
+        return prevCart.map((i) =>
+          i.id === itemToAdd.id ? { ...i, quantity: i.quantity + itemToAdd.quantity } : i
         );
       }
       return [...prevCart, itemToAdd];
@@ -38,34 +37,30 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const removeFromCart = (id: number) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+    setCart((prevCart) => prevCart.filter((i) => i.id !== id));
   };
 
   const updateQuantity = (id: number, quantity: number) => {
     setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === id ? { ...item, quantity } : item
-      )
+      prevCart.map((i) => (i.id === id ? { ...i, quantity } : i))
     );
   };
 
-  const clearCart = () => {
-    setCart([]);
-  };
+  const clearCart = () => setCart([]);
 
   return (
-    <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart }}
-    >
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart }}>
       {children}
     </CartContext.Provider>
   );
 };
 
-export const useCart = () => {
+export const useCart = (): CartContextType => {
   const context = useContext(CartContext);
   if (context === undefined) {
     throw new Error("useCart must be used within a CartProvider");
   }
   return context;
 };
+
+export default useCart;
