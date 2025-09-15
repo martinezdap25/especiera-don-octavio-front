@@ -3,6 +3,7 @@ import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { Geist } from 'next/font/google'
 import Navbar from "@/components/Navbar/Navbar";
+import { ProductProvider } from "@/context/ProductContext";
 
 const geist = Geist({
   subsets: ['latin'],
@@ -21,10 +22,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={geist.className}>
       <body>
-        <CartProvider>
-          <Navbar />
-          {children}
-        </CartProvider>
+        <ProductProvider>
+          <CartProvider>
+            <Navbar />
+            {children}
+          </CartProvider>
+        </ProductProvider>
       </body>
     </html>
   );

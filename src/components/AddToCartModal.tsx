@@ -1,13 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-type Product = {
-    id: number;
-    name: string;
-    unitType: "grams" | "unit";
-    price: string;
-};
+import { Product } from "@/context/ProductContext"; // 👈 reutilizamos el tipo centralizado
 
 type Props = {
     product: Product;
@@ -16,7 +10,9 @@ type Props = {
 };
 
 export default function AddToCartModal({ product, onClose, onConfirm }: Props) {
-    const [quantity, setQuantity] = useState(() => product.unitType === "grams" ? 500 : 1);
+    const [quantity, setQuantity] = useState(() =>
+        product.unitType === "grams" ? 500 : 1
+    );
 
     const gramSteps = Array.from({ length: 100 }, (_, i) => 500 + i * 500); // 500g a 50kg
 
@@ -24,9 +20,11 @@ export default function AddToCartModal({ product, onClose, onConfirm }: Props) {
         onConfirm(product, quantity);
     };
 
-    const finalPrice = product.unitType === "grams"
-        ? (Number(product.price) * (quantity / 500)).toFixed(2)
-        : (Number(product.price) * quantity).toFixed(2);
+    const priceNumber = Number(product.price); // 👈 aseguramos número
+    const finalPrice =
+        product.unitType === "grams"
+            ? (priceNumber * (quantity / 500)).toFixed(2)
+            : (priceNumber * quantity).toFixed(2);
 
     return (
         <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 px-4">
@@ -40,8 +38,12 @@ export default function AddToCartModal({ product, onClose, onConfirm }: Props) {
                 </button>
 
                 <div className="flex items-center mb-2">
-                    <h3 className="text-2xl font-bold text-gray-800 mr-4">{product.name}</h3>
-                    <span className="text-gray-400 font-medium text-lg">${product.price}</span>
+                    <h3 className="text-2xl font-bold text-gray-800 mr-4">
+                        {product.name}
+                    </h3>
+                    <span className="text-gray-400 font-medium text-lg">
+                        ${product.price}
+                    </span>
                 </div>
 
                 <p className="text-green-700 font-semibold mb-4">
@@ -85,7 +87,9 @@ export default function AddToCartModal({ product, onClose, onConfirm }: Props) {
                             } else {
                                 setQuantity((prev) => {
                                     const index = gramSteps.indexOf(prev);
-                                    return index < gramSteps.length - 1 ? gramSteps[index + 1] : prev;
+                                    return index < gramSteps.length - 1
+                                        ? gramSteps[index + 1]
+                                        : prev;
                                 });
                             }
                         }}

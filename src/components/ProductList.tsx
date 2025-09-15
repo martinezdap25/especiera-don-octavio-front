@@ -3,33 +3,19 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useCart, CartItem } from "@/context/CartContext";
+import { useProducts, Product } from "@/context/ProductContext";
 import AddToCartModal from "./AddToCartModal";
-import { FiShoppingBag, FiDollarSign } from "react-icons/fi";
-import { FaSortAlphaDown } from "react-icons/fa";
+import { FiShoppingBag } from "react-icons/fi";
+import { FaFilter } from "react-icons/fa";
+import Pagination from "./ui/Pagination";
 import Link from "next/link";
-
-type Product = {
-  id: number;
-  name: string;
-  unitType: "grams" | "unit";
-  price: string;
-};
-
-const products: Product[] = [
-  { id: 1, name: "Pimienta Negra", unitType: "grams", price: "150.00" },
-  { id: 2, name: "Comino", unitType: "grams", price: "120.00" },
-  { id: 3, name: "Miel", unitType: "unit", price: "500.00" },
-  { id: 4, name: "Orégano", unitType: "grams", price: "100.00" },
-  { id: 5, name: "Pimentón Ahumado", unitType: "grams", price: "200.00" },
-  { id: 6, name: "Sal Rosada", unitType: "grams", price: "90.00" },
-  { id: 7, name: "Azúcar", unitType: "grams", price: "80.00" },
-  { id: 8, name: "Canela en Rama", unitType: "grams", price: "250.00" },
-  { id: 9, name: "Aceite de Oliva", unitType: "unit", price: "700.00" },
-  { id: 10, name: "Vinagre Balsámico", unitType: "unit", price: "650.00" },
-];
+import { useDebounce } from "@/hooks/useDebounce";
 
 export default function ProductList() {
   const { cart, addToCart } = useCart();
+  const { products, loading, error, page, lastPage, fetchProducts } =
+    useProducts();
+
   const itemCount = cart.length;
   const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -37,6 +23,12 @@ export default function ProductList() {
   // animación badge
   const [popBadge, setPopBadge] = useState(false);
 
+  // dropdown filtros
+  const [showFilters, setShowFilters] = useState(false);
+  const [sort, setSort] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc'>('name_asc');
+
+  const debouncedSearch = useDebounce(search, 500);
+  
   useEffect(() => {
     if (itemCount > 0) {
       setPopBadge(true);
@@ -45,9 +37,9 @@ export default function ProductList() {
     }
   }, [itemCount]);
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    fetchProducts(1, debouncedSearch, sort);
+  }, [debouncedSearch, sort, fetchProducts]);
 
   const handleSelectProduct = (product: Product) => {
     setSelectedProduct(product);
@@ -61,9 +53,19 @@ export default function ProductList() {
     const cartItem: CartItem = {
       ...product,
       quantity,
+      price: product.price.toString(), // 👈 en cart tenés price como string
     };
     addToCart(cartItem);
     handleCloseModal();
+  };
+
+  const handleSelectFilter = (filter: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc') => {
+    setSort(filter);
+    setShowFilters(false);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    fetchProducts(newPage, debouncedSearch, sort);
   };
 
   return (
@@ -111,38 +113,124 @@ export default function ProductList() {
       </div>
 
       {/* Encabezado listado con filtros */}
-      <div className="flex justify-between items-center mb-4 px-2 sm:px-0">
+      <div className="flex justify-between items-center mb-4 px-2 sm:px-0 relative">
         <h2 className="text-base sm:text-lg font-semibold text-gray-800">
           Listado de productos
         </h2>
 
         <div className="flex gap-2">
-          {/* Escritorio: botones con texto */}
-          <div className="hidden sm:flex gap-2">
-            <button className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition">
-              Filtrar
+          {/* Escritorio: botón con dropdown */}
+          <div className="hidden sm:flex gap-2 relative">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="px-3 py-1 bg-amber-600 text-white rounded hover:bg-amber-700 transition"
+            >
+              Filtros
             </button>
-            <button className="px-3 py-1 bg-amber-600 text-white rounded hover:bg-amber-700 transition">
-              Ordenar
-            </button>
+            <div
+              className={`absolute right-0 top-10 w-48 bg-white border border-amber-200 rounded-lg shadow-lg z-10
+          overflow-hidden transition-all duration-300 ease-in-out
+          ${showFilters ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
+            >
+              <ul className="divide-y divide-gray-200">
+                <li>
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    onClick={() => handleSelectFilter("price_asc")}
+                  >
+                    Precio más bajo primero
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    onClick={() => handleSelectFilter("price_desc")}
+                  >
+                    Precio más alto primero
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    onClick={() => handleSelectFilter("name_asc")}
+                  >
+                    Nombre (A → Z)
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    onClick={() => handleSelectFilter("name_desc")}
+                  >
+                    Nombre (Z → A)
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
 
-          {/* Móvil: iconos */}
-          <div className="flex sm:hidden gap-2">
-            <button className="p-2 bg-green-500 text-white rounded hover:bg-green-600 transition flex items-center justify-center">
-              <FiDollarSign size={20} />
+          {/* Móvil: icono embudo */}
+          <div className="flex sm:hidden gap-2 relative">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="p-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition flex items-center justify-center"
+            >
+              <FaFilter size={20} />
             </button>
-            <button className="p-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition flex items-center justify-center">
-              <FaSortAlphaDown size={20} />
-            </button>
+            <div
+              className={`absolute right-2 top-12 w-48 bg-white border border-amber-200 rounded-lg shadow-lg z-10
+          overflow-hidden transition-all duration-300 ease-in-out
+          ${showFilters ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
+            >
+              <ul className="divide-y divide-gray-200">
+                <li>
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    onClick={() => handleSelectFilter("price_asc")}
+                  >
+                    Precio más bajo primero
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    onClick={() => handleSelectFilter("price_desc")}
+                  >
+                    Precio más alto primero
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    onClick={() => handleSelectFilter("name_asc")}
+                  >
+                    Nombre (A → Z)
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    onClick={() => handleSelectFilter("name_desc")}
+                  >
+                    Nombre (Z → A)
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Lista de productos */}
       <ul className="divide-y divide-amber-100 bg-white rounded-lg shadow border border-amber-200">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
+        {loading && (
+          <p className="text-gray-500 text-center p-4">Cargando productos...</p>
+        )}
+
+        {error && <p className="text-red-500 text-center p-4">{error}</p>}
+
+        {!loading && !error && products.length > 0 ? (
+          products.map((product) => (
             <li
               key={product.id}
               className="p-4 hover:bg-amber-50 flex justify-between items-center transition"
@@ -162,11 +250,23 @@ export default function ProductList() {
             </li>
           ))
         ) : (
-          <p className="text-gray-500 text-center p-4">
-            No se encontraron productos.
-          </p>
+          !loading &&
+          !error && (
+            <p className="text-gray-500 text-center p-4">
+              No se encontraron productos.
+            </p>
+          )
         )}
       </ul>
+
+      {/* Paginación */}
+      <div className="mt-6">
+        <Pagination
+          currentPage={page}
+          totalPages={lastPage}
+          onPageChange={handlePageChange}
+        />
+      </div>
 
       {/* Botón flotante SOLO en móvil */}
       {cart.length > 0 && (
@@ -178,9 +278,8 @@ export default function ProductList() {
             <FiShoppingBag size={24} />
             {itemCount > 0 && (
               <span
-                className={`absolute -top-1 -right-1 bg-red-500 text-white text-sm font-bold rounded-full w-6 h-6 flex items-center justify-center transform transition-transform duration-200 ${
-                  popBadge ? "scale-110 rotate-3" : "scale-100 rotate-0"
-                }`}
+                className={`absolute -top-1 -right-1 bg-red-500 text-white text-sm font-bold rounded-full w-6 h-6 flex items-center justify-center transform transition-transform duration-200 ${popBadge ? "scale-110 rotate-3" : "scale-100 rotate-0"
+                  }`}
               >
                 {itemCount}
               </span>
