@@ -51,6 +51,9 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    // Guardamos los filtros actuales en el estado para que el prefetching los pueda usar
+    const [currentSearch, setCurrentSearch] = useState<string | undefined>();
+    const [currentSort, setCurrentSort] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc'>('name_asc');
 
     // --- Lógica de Cache y Prefetching ---
     const cache = useRef(new Map<string, PaginatedResponse<Product>>());
@@ -68,6 +71,9 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
             search?: string,
             sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc'
         ) => {
+            setCurrentSearch(search);
+            setCurrentSort(sort || 'name_asc');
+
             const cacheKey = getCacheKey(currentPage, search, sort);
 
             // 1. Usar cache si existe para la combinación de filtros actual
@@ -116,20 +122,15 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
 
     // Efecto para el prefetching de páginas adyacentes
     useEffect(() => {
-        const prefetch = async (pageToPrefetch: number) => {
+        const prefetch = async (pageToPrefetch: number, search?: string, sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc') => {
             // No hacer prefetch si está fuera de los límites
             if (pageToPrefetch <= 0 || pageToPrefetch > lastPage) return;
 
-            // Obtener filtros actuales del componente ProductList (esto es una limitación, idealmente se pasarían al contexto)
-            // Por ahora, asumimos que los filtros no cambian durante el prefetch.
-            // Una mejora sería guardar search y sort en el estado del contexto.
-            const currentSearch = new URLSearchParams(window.location.search).get('search') || undefined;
-            const currentSort = (new URLSearchParams(window.location.search).get('sort') as any) || undefined;
-
-            const cacheKey = getCacheKey(pageToPrefetch, currentSearch, currentSort);
+            const cacheKey = getCacheKey(pageToPrefetch, search, sort);
             if (cache.current.has(cacheKey)) return; // Ya está en caché
 
-            const response = await productService.getAll({ page: pageToPrefetch, limit: 5, search: currentSearch, sort: currentSort });
+            // Usamos los filtros actuales guardados en el estado del contexto
+            const response = await productService.getAll({ page: pageToPrefetch, limit: 5, search, sort });
             cache.current.set(cacheKey, response);
         };
 
@@ -137,7 +138,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
         prefetch(page + 1);
         prefetch(page - 1);
 
-    }, [page, lastPage]); // Se ejecuta cuando cambia la página
+    }, [page, lastPage, currentSearch, currentSort]); // Se ejecuta cuando cambia la página o los filtros
 
     return (
         <ProductContext.Provider
