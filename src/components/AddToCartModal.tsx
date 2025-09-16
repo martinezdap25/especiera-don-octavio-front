@@ -72,11 +72,15 @@ export default function AddToCartModal({ product, onClose, onConfirm }: Props) {
                     </button>
 
                     <span className="px-4 py-2 border border-amber-200 rounded text-center w-full text-gray-700 font-bold">
-                        {product.unitType === "grams"
-                            ? quantity >= 1000
-                                ? `${(quantity / 1000).toFixed(1)} kg`
-                                : `${quantity} g`
-                            : quantity}
+                        {product.unitType === "grams" ? (
+              quantity < 1000
+                ? `${quantity}g`
+                : `${(quantity / 1000)
+                    .toFixed(2)
+                    .replace(/\.00$|\.0$/, "")}kg`
+            ) : (
+              quantity
+            )}
                     </span>
 
                     <button

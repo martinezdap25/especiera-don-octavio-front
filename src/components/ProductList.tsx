@@ -8,6 +8,7 @@ import AddToCartModal from "./AddToCartModal";
 import { FiShoppingBag } from "react-icons/fi";
 import { FaFilter } from "react-icons/fa";
 import Pagination from "./ui/Pagination";
+import ProductSkeleton from "./ProductSkeleton";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/useDebounce";
 
@@ -28,7 +29,7 @@ export default function ProductList() {
   const [sort, setSort] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc'>('name_asc');
 
   const debouncedSearch = useDebounce(search, 500);
-  
+
   useEffect(() => {
     if (itemCount > 0) {
       setPopBadge(true);
@@ -69,7 +70,7 @@ export default function ProductList() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-4 md:p-6 bg-gray-50 min-h-screen rounded-lg">
+    <div className="w-full max-w-2xl mx-auto p-4 md:p-6 bg-gray-50 rounded-lg">
       {/* Logo y nombre */}
       <div className="flex flex-col items-center mb-6">
         <Image
@@ -223,9 +224,10 @@ export default function ProductList() {
 
       {/* Lista de productos */}
       <ul className="divide-y divide-amber-100 bg-white rounded-lg shadow border border-amber-200">
-        {loading && (
-          <p className="text-gray-500 text-center p-4">Cargando productos...</p>
-        )}
+        {loading &&
+          Array.from({ length: 5 }).map((_, index) => (
+            <ProductSkeleton key={index} />
+          ))}
 
         {error && <p className="text-red-500 text-center p-4">{error}</p>}
 
@@ -252,9 +254,15 @@ export default function ProductList() {
         ) : (
           !loading &&
           !error && (
-            <p className="text-gray-500 text-center p-4">
-              No se encontraron productos.
-            </p>
+            <div className="flex flex-col items-center justify-center p-6 text-gray-500">
+              <span className="text-3xl mb-2">🔎</span>
+              <p className="text-center text-lg font-medium">
+                No se encontraron productos
+              </p>
+              <p className="text-sm text-gray-400">
+                Probá con otra búsqueda o filtros
+              </p>
+            </div>
           )
         )}
       </ul>

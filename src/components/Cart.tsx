@@ -1,11 +1,11 @@
 // components/Cart.tsx
 "use client";
 
-import { useState } from "react";
-import { useCart, type CartItem } from "@/context/CartContext";
+import { useState, useCallback }from "react";
+import { useCart, type CartItem }from "@/context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
-import { FiTrash2, FiArrowLeft, FiMinus, FiPlus, FiX } from "react-icons/fi";
+import { FiTrash2, FiArrowLeft, FiMinus, FiPlus, FiX }from "react-icons/fi";
 import ConfirmOrderModal from "./ConfirmOrderModal";
 
 export default function Cart() {
@@ -17,7 +17,7 @@ export default function Cart() {
             const price = Number(item.price) || 0;
             const itemPrice =
                 item.unitType === "grams"
-                    ? price * (item.quantity / 500) 
+                    ? price * (item.quantity / 500)
                     : price * item.quantity;
             return acc + itemPrice;
         }, 0)
@@ -34,27 +34,37 @@ export default function Cart() {
         if (newQty > 0) updateQuantity(item.id, newQty);
     };
 
-    const handleFinalizeOrder = () => {
-        const phoneNumber = "5493853023468"; // Reemplaza con tu número de WhatsApp
-        setIsModalOpen(false); // Cierra el modal
+    const handleFinalizeOrder = useCallback(
+        (deliveryMethod: "pickup" | "delivery", address: string) => {
+            const phoneNumber = "5493853023468"; // Reemplaza con tu número de WhatsApp
+            setIsModalOpen(false);
 
-        const message = `*Buenas! Quisiera hacer un pedido con los siguientes productos:*\n\n${cart
-            .map((item) => {
-                const subtotal =
-                    item.unitType === "grams"
-                        ? (Number(item.price) * (item.quantity / 500)).toFixed(2)
-                        : (Number(item.price) * item.quantity).toFixed(2);
-                const quantityDisplay = item.unitType === "grams" ? `${item.quantity}g` : `${item.quantity} u.`;
-                return `- ${item.name} (${quantityDisplay}): $${subtotal}`;
-            })
-            .join("\n")}\n\n*Precio a pagar: $${total}*`;
+            // 🔹 Agregar info de entrega
+            const extraInfo =
+                deliveryMethod === "pickup"
+                    ? "\n\n*Método de entrega:* Retiro en el local"
+                    : `\n\n*Método de entrega:* Envío a domicilio\n*Dirección:* ${address || "No indicada"}`;
 
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
-            message
-        )}`;
-        window.open(whatsappUrl, "_blank");
-        clearCart(); // Vacía el carrito después de redirigir
-    };
+            const message = `*Buenas! Quisiera hacer un pedido con los siguientes productos:*\n\n${cart
+                .map((item) => {
+                    const subtotal =
+                        item.unitType === "grams"
+                            ? (Number(item.price) * (item.quantity / 500)).toFixed(2)
+                            : (Number(item.price) * item.quantity).toFixed(2);
+                    const quantityInKg = (item.quantity / 1000).toFixed(1).replace(/\.0$/, "");
+                    const quantityDisplayFinal = item.unitType === "grams"
+                        ? (item.quantity < 1000 ? `${item.quantity}g` : `${quantityInKg}kg`)
+                        : `${item.quantity} u.`;
+                    return `- ${item.name} (${quantityDisplayFinal}): $${subtotal}`;
+                })
+                .join("\n")}\n\n*Precio a pagar: $${total}*${extraInfo}`;
+
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, "_blank");
+            clearCart();
+        },
+        [cart, total, clearCart]
+    );
 
     return (
         <div className="w-full max-w-2xl mx-auto p-4 md:p-6 bg-gray-50 min-h-screen rounded-lg">
@@ -131,7 +141,13 @@ export default function Cart() {
 
                                         {/* Cantidad con ancho fijo */}
                                         <span className="w-16 text-center font-semibold text-gray-700 truncate">
-                                            {item.unitType === "grams" ? `${item.quantity}g` : item.quantity}
+                                            {item.unitType === "grams" ? (
+                                                item.quantity < 1000
+                                                    ? `${item.quantity}g`
+                                                    : `${(item.quantity / 1000).toFixed(1).replace(/\.0$/, "")}kg`
+                                            ) : (
+                                                item.quantity
+                                            )}
                                         </span>
 
                                         <button
@@ -165,6 +181,7 @@ export default function Cart() {
                             <h2 className="text-lg font-semibold text-gray-800">Total del Pedido</h2>
                             <span className="text-2xl font-bold text-green-700">${total}</span>
                         </div>
+
                         <button
                             onClick={() => setIsModalOpen(true)}
                             className="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition shadow-md"
