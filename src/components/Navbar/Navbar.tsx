@@ -78,12 +78,13 @@ export default function Navbar() {
   animate-dropdown
 `}
                                 >
-                                    <button
-                                        onClick={() => alert("Próximamente: Panel de Administración")}
-                                        className="block w-full text-left px-4 py-2 text-amber-900 hover:bg-amber-100 hover:text-amber-950 transition-colors duration-200"
+                                    <Link
+                                        href="/login"
+                                        onClick={() => setIsUserDropdownOpen(false)}
+                                        className="block px-4 py-2 text-amber-900 hover:bg-amber-100 hover:text-amber-950 transition-colors duration-200"
                                     >
                                         ¿Eres admin?
-                                    </button>
+                                    </Link>
                                 </div>
                             )}
                         </div>
@@ -105,12 +106,12 @@ export default function Navbar() {
             {isMenuOpen && (
                 <div className="md:hidden bg-amber-100 border-t border-amber-200">
                     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                        <button
-                            onClick={() => alert("Próximamente: Panel de Administración")}
-                            className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-amber-900 hover:bg-amber-200 hover:text-amber-950 transition-colors duration-200"
+                        <Link
+                            href="/login"
+                            className="block px-3 py-2 rounded-md text-base font-medium text-amber-900 hover:bg-amber-200 hover:text-amber-950 transition-colors duration-200"
                         >
                             ¿Eres admin?
-                        </button>
+                        </Link>
                     </div>
                 </div>
             )}
