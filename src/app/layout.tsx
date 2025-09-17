@@ -4,6 +4,7 @@ import { CartProvider } from "@/context/CartContext";
 import { Geist } from 'next/font/google'
 import Navbar from "@/components/Navbar/Navbar";
 import { ProductProvider } from "@/context/ProductContext";
+import SessionAuthProvider from "@/context/SessionAuthProvider";
 
 const geist = Geist({
   subsets: ['latin'],
@@ -22,12 +23,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={geist.className}>
       <body>
-        <ProductProvider>
-          <CartProvider>
-            <Navbar />
-            {children}
-          </CartProvider>
-        </ProductProvider>
+        <SessionAuthProvider>
+          <ProductProvider>
+            <CartProvider>
+              <Navbar />
+              {children}
+            </CartProvider>
+          </ProductProvider>
+        </SessionAuthProvider>
       </body>
     </html>
   );

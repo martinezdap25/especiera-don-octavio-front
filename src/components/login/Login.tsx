@@ -4,27 +4,35 @@ import { motion } from "framer-motion";
 import { useState, FormEvent } from "react";
 import { FiUser, FiLock } from "react-icons/fi";
 import Image from "next/image";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const router = useRouter();
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError("");
         setLoading(true);
 
-        setTimeout(() => {
-            if (email === "admin@donoctavio.com" && password === "1234") {
-                alert("Inicio de sesión exitoso ✨");
-                // Aquí podrías usar router.push("/admin")
-            } else {
-                setError("Usuario o contraseña incorrectos.");
-            }
-            setLoading(false);
-        }, 1500);
+        const response = await signIn("credentials", {
+            email,
+            password,
+            redirect: false, // No redirigir automáticamente, lo manejaremos nosotros.
+        });
+
+        setLoading(false);
+
+        if (response?.error) {
+            // El error por defecto es "CredentialsSignin", lo personalizamos.
+            setError("Usuario o contraseña incorrectos.");
+        } else if (response?.ok) {
+            router.push("/dashboard"); // Redirige al panel de dashboard si el login es exitoso.
+        }
     };
 
     return (
@@ -32,8 +40,8 @@ export default function Login() {
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                className="relative bg-white rounded-2xl p-8 sm:p-10 w-full max-w-md border border-amber-200"
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="relative bg-white rounded-2xl p-8 sm:p-10 w-full max-w-md"
             >
                 {/* Logo */}
                 <div className="flex flex-col items-center mb-8">
@@ -53,13 +61,13 @@ export default function Login() {
                     <h1 className="text-3xl font-bold text-amber-900 mt-4">
                         Panel de Administración
                     </h1>
-                    <p className="text-green-600 text-sm mt-1">
+                    <p className="text-amber-700 text-sm mt-1">
                         Ingresa tus credenciales para continuar
                     </p>
                 </div>
 
                 {/* Formulario */}
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-5">
                     {/* Email */}
                     <div>
                         <label className="block text-sm font-medium text-amber-800 mb-2">
@@ -72,7 +80,7 @@ export default function Login() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="admin@donoctavio.com"
-                                className="w-full outline-none bg-transparent text-amber-900 placeholder-amber-400"
+                                className="w-full outline-none bg-transparent text-amber-900 placeholder-amber-500"
                                 required
                             />
                         </div>
@@ -90,7 +98,7 @@ export default function Login() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="********"
-                                className="w-full outline-none bg-transparent text-amber-900 placeholder-amber-400"
+                                className="w-full outline-none bg-transparent text-amber-900 placeholder-amber-500"
                                 required
                             />
                         </div>
@@ -98,7 +106,7 @@ export default function Login() {
 
                     {/* Error */}
                     {error && (
-                        <p className="text-sm text-red-600 text-center font-medium">
+                        <p className="text-sm text-red-600 text-center pt-2">
                             {error}
                         </p>
                     )}
@@ -109,7 +117,7 @@ export default function Login() {
                         whileTap={{ scale: 0.97 }}
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold shadow-md hover:bg-green-700 transition-colors duration-300 disabled:bg-green-200 disabled:cursor-not-allowed"
+                        className="w-full bg-amber-500 text-white py-3 rounded-lg font-semibold shadow-md hover:bg-amber-600 transition-colors duration-300 disabled:bg-amber-300 disabled:cursor-not-allowed"
                     >
                         {loading ? "Ingresando..." : "Ingresar"}
                     </motion.button>

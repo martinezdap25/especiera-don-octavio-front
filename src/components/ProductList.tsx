@@ -11,8 +11,10 @@ import Pagination from "./ui/Pagination";
 import ProductSkeleton from "./ProductSkeleton";
 import Link from "next/link";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useSession } from "next-auth/react";
 
 export default function ProductList() {
+
   const { cart, addToCart } = useCart();
   const { products, loading, error, page, lastPage, fetchProducts } =
     useProducts();
@@ -68,6 +70,13 @@ export default function ProductList() {
   const handlePageChange = (newPage: number) => {
     fetchProducts(newPage, debouncedSearch, sort);
   };
+
+  const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+  console.log("Session: ", session);
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4 md:p-6 bg-gray-50 rounded-lg">
