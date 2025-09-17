@@ -93,7 +93,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
                 // 2. Hacer la petición al API si no hay datos en caché
                 const response = await productService.getAll({
                     page: currentPage,
-                    limit: 5,
+                    limit: 6,
                     search,
                     sort,
                 });
@@ -130,7 +130,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
             if (cache.current.has(cacheKey)) return; // Ya está en caché
 
             // Usamos los filtros actuales guardados en el estado del contexto
-            const response = await productService.getAll({ page: pageToPrefetch, limit: 5, search, sort });
+            const response = await productService.getAll({ page: pageToPrefetch, limit: 6, search, sort });
             cache.current.set(cacheKey, response);
         };
 

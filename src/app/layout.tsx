@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { Geist } from 'next/font/google'
-import Navbar from "@/components/Navbar/Navbar";
 import { ProductProvider } from "@/context/ProductContext";
 import SessionAuthProvider from "@/context/SessionAuthProvider";
 import { UserProvider } from "@/context/UserContext";
+import LayoutClient from "@/components/LayoutClient";
 
 const geist = Geist({
   subsets: ['latin'],
@@ -23,13 +23,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={geist.className}>
-      <body>
+      <body className="flex flex-col min-h-screen">
         <SessionAuthProvider>
           <UserProvider>
             <ProductProvider>
               <CartProvider>
-                <Navbar />
-                {children}
+                <LayoutClient>
+                  {children}
+                </LayoutClient>
               </CartProvider>
             </ProductProvider>
           </UserProvider>

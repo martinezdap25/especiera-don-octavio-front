@@ -87,9 +87,9 @@ export default function ProductList() {
           alt="Logo Don Octavio"
           width={120}
           height={120}
-          className="mb-2 sm:w-28 sm:h-28 w-24 h-24"
+          className="mb-2 sm:w-24 sm:h-24 w-24 h-24"
         />
-        <h1 className="text-3xl sm:text-4xl font-bold text-amber-800 text-center">
+        <h1 className="text-2xl sm:text-4xl font-bold text-amber-800 text-center">
           Especiera Don Octavio
         </h1>
         <p className="text-green-700 text-center text-sm sm:text-base">
@@ -232,38 +232,51 @@ export default function ProductList() {
       </div>
 
       {/* Lista de productos */}
-      <ul className="divide-y divide-amber-100 bg-white rounded-lg shadow border border-amber-200">
+      <div className="bg-white rounded-lg border border-amber-200 divide-y divide-amber-100">
         {loading &&
-          Array.from({ length: 5 }).map((_, index) => (
+          Array.from({ length: 6 }).map((_, index) => (
             <ProductSkeleton key={index} />
           ))}
 
-        {error && <p className="text-red-500 text-center p-4">{error}</p>}
+        {error && <p className="text-red-500 text-center p-4 col-span-full">{error}</p>}
 
         {!loading && !error && products.length > 0 ? (
           products.map((product) => (
-            <li
+            <div
               key={product.id}
-              className="p-4 hover:bg-amber-50 flex justify-between items-center transition"
+              className="flex flex-row items-center justify-between p-3"
             >
-              <span className="font-medium text-gray-800">{product.name}</span>
-              <div className="flex items-center gap-4">
-                <span className="text-gray-700 font-semibold">
-                  ${product.price}
-                </span>
+              {/* Nombre, precio y unidad */}
+              <div className="flex flex-col min-w-0">
+                <h3 className="font-semibold text-sm sm:text-base text-amber-800 truncate">
+                  {product.name}
+                </h3>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-sm font-semibold text-green-700">
+                    ${product.price.toString()}
+                  </span>
+                  <span className="text-xs text-gray-400">
+                    {product.unitType === 'grams' ? 'por 500g' : 'por unidad'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Botón */}
+              <div className="flex-shrink-0">
                 <button
-                  className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
+                  className="flex items-center justify-center bg-green-600 text-white w-10 h-10 sm:w-auto sm:h-auto sm:px-4 sm:py-2 rounded-full sm:rounded-lg hover:bg-green-700 transition-all duration-200"
                   onClick={() => handleSelectProduct(product)}
                 >
-                  Añadir
+                  <FiShoppingBag size={16} className="sm:mr-2" />
+                  <span className="hidden sm:inline">Añadir</span>
                 </button>
               </div>
-            </li>
+            </div>
           ))
         ) : (
           !loading &&
           !error && (
-            <div className="flex flex-col items-center justify-center p-6 text-gray-500">
+            <div className="flex flex-col items-center justify-center p-8 text-gray-500 bg-white rounded-lg border border-amber-100">
               <span className="text-3xl mb-2">🔎</span>
               <p className="text-center text-lg font-medium">
                 No se encontraron productos
@@ -274,7 +287,7 @@ export default function ProductList() {
             </div>
           )
         )}
-      </ul>
+      </div>
 
       {/* Paginación */}
       <div className="mt-6">
