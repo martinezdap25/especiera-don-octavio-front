@@ -179,6 +179,7 @@ export default function Navbar() {
                     ) : (
                         <Link
                             href="/login"
+                            onClick={() => setIsMenuOpen(false)}
                             className="block px-3 py-2 rounded-md text-base font-medium text-amber-900 hover:bg-amber-200 hover:text-amber-950 transition-colors duration-200"
                         >
                             ¿Eres admin?

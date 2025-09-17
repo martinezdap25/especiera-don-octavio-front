@@ -248,15 +248,15 @@ export default function ProductList() {
             >
               {/* Nombre, precio y unidad */}
               <div className="flex flex-col min-w-0">
-                <h3 className="font-semibold text-sm sm:text-base text-amber-800 truncate">
+                <h3 className="font-semibold text-md sm:text-base text-amber-800 truncate">
                   {product.name}
                 </h3>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2">
                   <span className="text-sm font-semibold text-green-700">
                     ${product.price.toString()}
                   </span>
-                  <span className="text-xs text-gray-400">
-                    {product.unitType === 'grams' ? 'por 500g' : 'por unidad'}
+                  <span className="text-xs text-gray-600">
+                    {product.unitType === 'grams' ? '- 500g' : '- unidad'}
                   </span>
                 </div>
               </div>
