@@ -36,7 +36,7 @@ export default function Login() {
     };
 
     return (
-        <div className="flex items-center justify-center pt-20">
+        <div className="flex items-center justify-center">
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -61,7 +61,7 @@ export default function Login() {
                     <h1 className="text-3xl font-bold text-amber-900 mt-4">
                         Panel de Administración
                     </h1>
-                    <p className="text-amber-700 text-sm mt-1">
+                    <p className="text-green-600 text-sm mt-1">
                         Ingresa tus credenciales para continuar
                     </p>
                 </div>
@@ -73,14 +73,14 @@ export default function Login() {
                         <label className="block text-sm font-medium text-amber-800 mb-2">
                             Email
                         </label>
-                        <div className="flex items-center border-2 border-amber-200 rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-amber-400 focus-within:border-amber-400 transition-all">
+                        <div className="flex items-center border-2 border-amber-200 rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-amber-400 focus-within:border-amber-400 transition-all">
                             <FiUser className="text-amber-600 mr-3" />
                             <input
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="admin@donoctavio.com"
-                                className="w-full outline-none bg-transparent text-amber-900 placeholder-amber-500"
+                                className="w-full outline-none bg-transparent text-amber-900 placeholder-amber-900 placeholder:opacity-30"
                                 required
                             />
                         </div>
@@ -91,14 +91,14 @@ export default function Login() {
                         <label className="block text-sm font-medium text-amber-800 mb-2">
                             Contraseña
                         </label>
-                        <div className="flex items-center border-2 border-amber-200 rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-amber-400 focus-within:border-amber-400 transition-all">
+                        <div className="flex items-center border-2 border-amber-200 rounded-lg px-3 py-2 bg-white focus-within:ring-1 focus-within:ring-amber-400 focus-within:border-amber-400 transition-all">
                             <FiLock className="text-amber-600 mr-3" />
                             <input
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="********"
-                                className="w-full outline-none bg-transparent text-amber-900 placeholder-amber-500"
+                                className="w-full outline-none bg-transparent text-amber-900 placeholder-amber-900 placeholder:opacity-30"
                                 required
                             />
                         </div>
@@ -117,7 +117,7 @@ export default function Login() {
                         whileTap={{ scale: 0.97 }}
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-amber-500 text-white py-3 rounded-lg font-semibold shadow-md hover:bg-amber-600 transition-colors duration-300 disabled:bg-amber-300 disabled:cursor-not-allowed"
+                        className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold shadow-md hover:bg-green-700 transition-colors duration-300 disabled:bg-green-200 disabled:cursor-not-allowed"
                     >
                         {loading ? "Ingresando..." : "Ingresar"}
                     </motion.button>
