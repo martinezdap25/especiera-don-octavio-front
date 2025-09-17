@@ -135,8 +135,8 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
         };
 
         // Prefetch de la página siguiente y anterior
-        prefetch(page + 1);
-        prefetch(page - 1);
+        prefetch(page + 1, currentSearch, currentSort);
+        prefetch(page - 1, currentSearch, currentSort);
 
     }, [page, lastPage, currentSearch, currentSort]); // Se ejecuta cuando cambia la página o los filtros
 

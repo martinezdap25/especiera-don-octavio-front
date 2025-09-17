@@ -4,7 +4,7 @@ import { useIsMobile } from "@/hooks/useIsMobil";
 interface PaginationProps {
     totalPages: number;
     currentPage: number;
-    onPageChange: (page: number) => void; 
+    onPageChange: (page: number) => void;
 }
 
 export default function Pagination({
@@ -26,13 +26,13 @@ export default function Pagination({
 
     if (isMobile) {
         return (
-            <nav className="flex justify-between gap-4 mt-4 font-semibold" aria-label="Mobile Pagination">
+            <nav className="flex justify-between w-full mt-4 font-semibold" aria-label="Mobile Pagination">
                 <button
                     onClick={handlePrev}
                     disabled={currentPage === 1}
                     className="px-4 py-2 rounded font-semibold text-base
-            bg-white text-gray-700 border border-gray-300 
-            disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                bg-white text-gray-700 border border-gray-300 
+                disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                     Anterior
                 </button>
@@ -40,8 +40,8 @@ export default function Pagination({
                     onClick={handleNext}
                     disabled={currentPage === totalPages}
                     className="px-4 py-2 rounded font-semibold text-base
-            bg-white text-gray-700 border border-gray-300 
-            disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                bg-white text-gray-700 border border-gray-300 
+                disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                     Siguiente
                 </button>

@@ -1,21 +1,10 @@
 "use client";
-import { useSession } from "next-auth/react";
 
-const Dashboard = () => {
-    const { data: session, status } = useSession();
+import Dashboard from "@/components/dashboard/Dahsboard";
 
-    if (status === "loading") {
-        return <p>Loading...</p>;
-    }
-    console.log(session);
-
-    return (
-        <div>
-            <h1>Dashboard</h1>
-            <pre>
-                <code>{JSON.stringify(session, null, 2)}</code>
-            </pre>
-        </div>
+export default function DashboardPage() {
+    return (<main className="min-h-[calc(100vh-5rem)] bg-gray-100 flex flex-col items-center p-4 md:p-6">
+        <Dashboard />
+    </main>
     );
-};
-export default Dashboard;
+}
