@@ -6,7 +6,7 @@ import React, { createContext, useState, useContext, ReactNode } from "react";
 export type CartItem = {
   id: number;
   name: string;
-  price: string;
+  price: number;
   quantity: number;
   unitType: "grams" | "unit";
 };

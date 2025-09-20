@@ -15,7 +15,7 @@ import { productService } from "@/services/productService";
 export type Product = {
     id: number;
     name: string;
-    price: string;
+    price: number;
     image?: string;
     unitType: "grams" | "unit";
     deletedAt?: string | null;

@@ -12,9 +12,9 @@ export default function LayoutClient({ children }: Props) {
     const pathname = usePathname();
 
     // Define las rutas donde NO quieres que se muestre el footer
-    const noFooterRoutes = ["/dashboard", "/login", "/cart"];
+    const noFooterRoutes = ["/dashboard", "/login", "/cart", "/dashboard/products/new"];
 
-    const showFooter = !noFooterRoutes.includes(pathname);
+    const showFooter = !noFooterRoutes.some(route => pathname.startsWith(route));
 
     return (
         <>

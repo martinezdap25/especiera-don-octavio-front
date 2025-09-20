@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "@/services/axios";
 import { Product } from "@/context/ProductContext";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -30,7 +30,7 @@ export const productService = {
         if (params.search) queryParams.append('search', params.search);
         if (params.sort) queryParams.append('sort', params.sort);
 
-        const { data } = await axios.get<PaginatedResponse<Product>>(
+        const { data } = await api.get<PaginatedResponse<Product>>(
             `${API_URL}/products?${queryParams.toString()}`
         );
 
@@ -38,21 +38,21 @@ export const productService = {
     },
 
     getById: async (id: number): Promise<Product> => {
-        const { data } = await axios.get<Product>(`${API_URL}/products/${id}`);
+        const { data } = await api.get<Product>(`/products/${id}`);
         return data;
     },
 
     create: async (product: Omit<Product, "id">): Promise<Product> => {
-        const { data } = await axios.post<Product>(`${API_URL}/products`, product);
+        const { data } = await api.post<Product>(`/products`, product);
         return data;
     },
 
     update: async (id: number, product: Partial<Product>): Promise<Product> => {
-        const { data } = await axios.put<Product>(`${API_URL}/products/${id}`, product);
+        const { data } = await api.put<Product>(`/products/${id}`, product);
         return data;
     },
 
     delete: async (id: number): Promise<void> => {
-        await axios.delete(`${API_URL}/products/${id}`);
+        await api.delete(`/products/${id}`);
     },
 };

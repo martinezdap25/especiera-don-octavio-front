@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useProducts, Product } from "@/context/ProductContext";
 import { FiEdit, FiTrash2, FiPlusCircle, FiSearch, FiChevronDown } from "react-icons/fi";
 import { FaFilter } from "react-icons/fa";
+import Link from "next/link";
 import Image from "next/image";
 import Pagination from "@/components/ui/Pagination";
 
@@ -48,10 +49,6 @@ const Dashboard = () => {
         alert(`Editar producto: ${product.name}`);
     };
 
-    const handleCreate = () => {
-        alert("Crear nuevo producto");
-    };
-
     const handleSelectFilter = (filter: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc') => {
         setSortOrder(filter);
         setShowFilters(false);
@@ -95,14 +92,14 @@ const Dashboard = () => {
                 {/* Botones filtros / añadir */}
                 <div className="flex gap-2 w-full sm:w-auto">
                     {/* Botón Crear Producto */}
-                    <button
-                        onClick={handleCreate}
+                    <Link
+                        href="/dashboard/products/new"
                         className="h-10 flex-grow sm:flex-grow-0 flex items-center justify-center gap-2 bg-green-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                     >
                         <FiPlusCircle size={20} />
                         <span className="sm:hidden">Añadir</span>
                         <span className="hidden sm:inline">Crear</span>
-                    </button>
+                    </Link>
 
                     {/* Dropdown de sort */}
                     <div className="relative flex-grow sm:flex-grow-0">

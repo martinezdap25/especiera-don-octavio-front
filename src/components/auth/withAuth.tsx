@@ -15,6 +15,7 @@ const withAuth = <P extends object>(
     useEffect(() => {
       if (!token) {
         router.replace("/login");
+        setIsLoading(false); // Detener la carga si no hay token
         return;
       }
 

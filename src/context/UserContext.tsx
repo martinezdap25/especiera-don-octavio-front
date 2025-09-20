@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { createContext, useContext } from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import React, { createContext, useContext, ReactNode, useEffect } from "react";
+import { useSession, signIn, signOut, SessionProvider } from "next-auth/react";
 
 interface UserContextType {
   token: string | null;
@@ -11,10 +11,19 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { data: session } = useSession();
+const UserProviderContent: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { data: session, status } = useSession();
 
   const token = (session?.user as any)?.access_token ?? null;
+
+  useEffect(() => {
+    if (status === "authenticated" && token) {
+      localStorage.setItem("token", token);
+    }
+    if (status === "unauthenticated") {
+      localStorage.removeItem("token");
+    }
+  }, [session, status, token]);
 
   const login = async (email: string, password: string) => {
     await signIn("credentials", {
@@ -25,6 +34,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
+    localStorage.removeItem("token");
     signOut({ callbackUrl: "/" });
   };
 
@@ -32,6 +42,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <UserContext.Provider value={{ token, login, logout }}>
       {children}
     </UserContext.Provider>
+  );
+};
+
+export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  return (
+    <SessionProvider>
+      <UserProviderContent>{children}</UserProviderContent>
+    </SessionProvider>
   );
 };
 

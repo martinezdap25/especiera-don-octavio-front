@@ -14,11 +14,10 @@ export default function Cart() {
 
     const total = cart
         .reduce((acc: number, item: CartItem) => {
-            const price = Number(item.price) || 0;
             const itemPrice =
                 item.unitType === "grams"
-                    ? price * (item.quantity / 500)
-                    : price * item.quantity;
+                    ? item.price * (item.quantity / 500)
+                    : item.price * item.quantity;
             return acc + itemPrice;
         }, 0)
         .toFixed(2);
@@ -49,8 +48,8 @@ export default function Cart() {
                 .map((item) => {
                     const subtotal =
                         item.unitType === "grams"
-                            ? (Number(item.price) * (item.quantity / 500)).toFixed(2)
-                            : (Number(item.price) * item.quantity).toFixed(2);
+                            ? (item.price * (item.quantity / 500)).toFixed(2)
+                            : (item.price * item.quantity).toFixed(2);
                     const quantityInKg = (item.quantity / 1000).toFixed(1).replace(/\.0$/, "");
                     const quantityDisplayFinal = item.unitType === "grams"
                         ? (item.quantity < 1000 ? `${item.quantity}g` : `${quantityInKg}kg`)
@@ -67,7 +66,7 @@ export default function Cart() {
     );
 
     return (
-        <div className="w-full max-w-2xl mx-auto p-4 md:p-6 bg-gray-50 rounded-lg">
+        <div className="w-full max-w-2xl mx-auto p-4 md:p-6 bg-gray-50 rounded-lg shadow-md">
             {/* Encabezado */}
             <div className="flex items-center justify-between mb-6">
                 <Link
@@ -97,9 +96,8 @@ export default function Cart() {
                     {/* Lista de productos */}
                     <ul className="bg-white rounded-lg shadow border border-amber-200 mb-6">
                         {cart.map((item: CartItem, index) => {
-                            const price = Number(item.price) || 0;
                             const subtotal =
-                                item.unitType === "grams" ? price * (item.quantity / 500) : price * item.quantity;
+                                item.unitType === "grams" ? item.price * (item.quantity / 500) : item.price * item.quantity;
 
                             return (
                                 <li
