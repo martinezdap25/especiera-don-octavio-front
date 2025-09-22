@@ -6,6 +6,7 @@ import { FaFilter } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
 import Pagination from "@/components/ui/Pagination";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const ProductSkeleton = () => (
     <div className="animate-pulse flex items-center justify-between p-3 sm:p-4 border-b border-amber-200 sm:border rounded-sm sm:rounded-lg bg-white">
@@ -25,15 +26,11 @@ const Dashboard = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortOrder, setSortOrder] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc'>('name_asc');
     const [showFilters, setShowFilters] = useState(false);
+    const debouncedSearch = useDebounce(searchTerm, 500);
 
     useEffect(() => {
-        fetchProducts(1, searchTerm, sortOrder);
-    }, [searchTerm, sortOrder, fetchProducts]);
-
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        fetchProducts(1, searchTerm, sortOrder);
-    };
+        fetchProducts(1, debouncedSearch, sortOrder);
+    }, [debouncedSearch, sortOrder, fetchProducts]);
 
     const handlePageChange = (newPage: number) => {
         if (newPage >= 1 && newPage <= lastPage) {
@@ -76,7 +73,7 @@ const Dashboard = () => {
             {/* Buscador y filtros */}
             <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
                 {/* Buscador */}
-                <form onSubmit={handleSearch} className="w-full sm:flex-grow">
+                <form onSubmit={(e) => e.preventDefault()} className="w-full sm:flex-grow">
                     <div className="relative w-full">
                         <input
                             type="text"
