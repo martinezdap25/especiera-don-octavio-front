@@ -26,11 +26,15 @@ const UserProviderContent: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [session, status, token]);
 
   const login = async (email: string, password: string) => {
-    await signIn("credentials", {
+    const result = await signIn("credentials", {
       email,
       password,
       redirect: false,
     });
+
+    if (result?.ok && !result.error) {
+      window.location.href = "/dashboard";
+    }
   };
 
   const logout = () => {
