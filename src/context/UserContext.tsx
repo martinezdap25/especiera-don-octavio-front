@@ -2,6 +2,7 @@
 "use client";
 import React, { createContext, useContext, ReactNode, useEffect } from "react";
 import { useSession, signIn, signOut, SessionProvider } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface UserContextType {
   token: string | null;
@@ -13,10 +14,12 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 const UserProviderContent: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   const token = (session?.user as any)?.access_token ?? null;
 
   useEffect(() => {
+    console.log("[UserContext] Status changed:", status, "Session:", session);
     if (status === "authenticated" && token) {
       localStorage.setItem("token", token);
     }
@@ -26,18 +29,26 @@ const UserProviderContent: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [session, status, token]);
 
   const login = async (email: string, password: string) => {
+    console.log("[UserContext] 1. Iniciando login para:", email);
     const result = await signIn("credentials", {
       email,
       password,
       redirect: false,
     });
 
+    console.log("[UserContext] 2. Resultado de signIn:", result);
+
     if (result?.ok && !result.error) {
-      window.location.href = "/dashboard";
+      console.log("[UserContext] 3. Login exitoso. Redirigiendo a /dashboard...");
+      router.push("/dashboard");
+    } else {
+      console.error("[UserContext] 3. Falló el login:", result?.error);
+      throw new Error(result?.error || "Error al iniciar sesión");
     }
   };
 
   const logout = () => {
+    console.log("[UserContext] Iniciando logout...");
     localStorage.removeItem("token");
     signOut({ callbackUrl: "/" });
   };
