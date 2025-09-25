@@ -14,7 +14,7 @@ const CreateProductForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
-    const { fetchProducts } = useProducts();
+    const { invalidateCache } = useProducts();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,8 +29,8 @@ const CreateProductForm = () => {
                 unitType,
             });
 
-            // Si la llamada es exitosa:
-            await fetchProducts(); // Refrescar la lista de productos
+            // Invalidamos el caché para forzar la recarga de datos frescos en el dashboard
+            invalidateCache();
             router.push("/dashboard");
 
         } catch (err) {

@@ -48,7 +48,7 @@ export const productService = {
     },
 
     update: async (id: number, product: Partial<Product>): Promise<Product> => {
-        const { data } = await api.put<Product>(`/products/${id}`, product);
+        const { data } = await api.patch<Product>(`/products/${id}`, product);
         return data;
     },
 

@@ -40,6 +40,7 @@ type ProductContextType = {
         search?: string,
         sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc'
     ) => Promise<void>;
+    invalidateCache: () => void;
 };
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -64,6 +65,11 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
         search?: string,
         sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc'
     ) => `page=${page}&search=${search || ''}&sort=${sort || 'name_asc'}`;
+
+    // Función para limpiar el caché, la usaremos después de mutaciones
+    const invalidateCache = useCallback(() => {
+        cache.current.clear();
+    }, []);
 
     const fetchProducts = useCallback(
         async (
@@ -150,6 +156,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
                 loading,
                 error,
                 fetchProducts,
+                invalidateCache,
             }}
         >
             {children}

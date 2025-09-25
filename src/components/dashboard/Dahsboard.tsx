@@ -1,31 +1,43 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useProducts, Product } from "@/context/ProductContext";
+import { Toaster, toast } from "react-hot-toast";
 import { FiEdit, FiTrash2, FiPlusCircle, FiSearch, FiChevronDown } from "react-icons/fi";
 import { FaFilter } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
 import Pagination from "@/components/ui/Pagination";
 import { useDebounce } from "@/hooks/useDebounce";
+import EditProductModal from "./EditProductModal";
+import DeleteConfirmationModal from "./DeleteConfirmationModal"; // Importamos el nuevo modal
+import { productService } from "@/services/productService";
 
 const ProductSkeleton = () => (
-    <div className="animate-pulse flex items-center justify-between p-3 sm:p-4 border-b border-amber-200 sm:border rounded-sm sm:rounded-lg bg-white">
-        <div className="flex flex-col flex-grow min-w-0">
-            <div className="h-5 bg-amber-200 rounded w-3/4 mb-2"></div>
-            <div className="h-4 bg-amber-200 rounded w-1/2"></div>
+    <div className="animate-pulse flex items-center justify-between p-3 sm:p-4 border border-amber-200 rounded-lg bg-white">
+        {/* Esqueleto de la información del producto */}
+        <div className="flex-grow min-w-0">
+            <div className="h-5 bg-amber-200 rounded-md w-3/4 mb-2"></div>
+            <div className="flex items-center gap-2">
+                <div className="h-4 bg-amber-100 rounded-md w-12"></div>
+                <div className="h-4 bg-green-100 rounded-md w-16"></div>
+            </div>
         </div>
-        <div className="flex gap-1 ml-2">
+        {/* Esqueleto de los botones */}
+        <div className="flex gap-2 ml-2 flex-shrink-0">
             <div className="w-8 h-8 bg-amber-200 rounded-full"></div>
-            <div className="w-8 h-8 bg-amber-200 rounded-full"></div>
+            <div className="w-8 h-8 bg-red-200 rounded-full"></div>
         </div>
     </div>
 );
 
 const Dashboard = () => {
-    const { products, page, lastPage, total, loading, error, fetchProducts } = useProducts();
+    const { products, page, lastPage, total, loading, error, fetchProducts, invalidateCache } = useProducts();
     const [searchTerm, setSearchTerm] = useState("");
     const [sortOrder, setSortOrder] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc'>('name_asc');
     const [showFilters, setShowFilters] = useState(false);
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [deletingProduct, setDeletingProduct] = useState<Product | null>(null); // Estado para el producto a eliminar
+    const [isDeleting, setIsDeleting] = useState(false); // Estado de carga para la eliminación
     const debouncedSearch = useDebounce(searchTerm, 500);
 
     useEffect(() => {
@@ -38,12 +50,32 @@ const Dashboard = () => {
         }
     };
 
-    const handleDelete = (productId: number) => {
-        alert(`Eliminar producto con ID: ${productId}`);
+    // Abre el modal de confirmación de eliminación
+    const handleDelete = (product: Product) => {
+        setDeletingProduct(product);
+    };
+
+    // Ejecuta la eliminación después de la confirmación
+    const confirmDelete = async () => {
+        if (!deletingProduct) return;
+
+        setIsDeleting(true);
+        try {
+            await productService.delete(deletingProduct.id);
+            invalidateCache(); // Limpiamos el caché
+            setDeletingProduct(null); // Cierra el modal
+            await fetchProducts(page, debouncedSearch, sortOrder); // Refresca la lista
+            toast.success("Producto eliminado exitosamente.");
+        } catch (error) {
+            console.error("Error al eliminar el producto:", error);
+            toast.error("Hubo un error al eliminar el producto.");
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     const handleEdit = (product: Product) => {
-        alert(`Editar producto: ${product.name}`);
+        setEditingProduct(product);
     };
 
     const handleSelectFilter = (filter: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc') => {
@@ -53,6 +85,7 @@ const Dashboard = () => {
 
     return (
         <div className="w-full max-w-5xl mx-auto p-4 md:p-6 bg-white rounded-lg shadow-md">
+            <Toaster position="bottom-right" />
             {/* Logo y título */}
             <div className="flex flex-col items-center mb-6">
                 <Image
@@ -166,7 +199,7 @@ const Dashboard = () => {
                     {products.map((product) => (
                         <div
                             key={product.id}
-                            className="flex items-center justify-between p-3 sm:p-4 border-b border-amber-200 sm:border rounded-sm sm:rounded-lg bg-white"
+                            className="flex items-center justify-between p-3 sm:p-4 border border-amber-200 rounded-lg bg-white"
                         >
                             {/* Información principal */}
                             <div className="flex flex-col flex-grow min-w-0">
@@ -188,7 +221,7 @@ const Dashboard = () => {
                                     <FiEdit size={16} />
                                 </button>
                                 <button
-                                    onClick={() => handleDelete(product.id)}
+                                    onClick={() => handleDelete(product)}
                                     className="bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-colors flex items-center justify-center"
                                 >
                                     <FiTrash2 size={16} />
@@ -212,6 +245,28 @@ const Dashboard = () => {
                 </div>
             </div>
 
+            {/* Modal de Edición */}
+            {editingProduct && (
+                <EditProductModal
+                    product={editingProduct}
+                    onClose={() => setEditingProduct(null)}
+                    onSuccess={() => {
+                        invalidateCache(); // Limpiamos el caché
+                        setEditingProduct(null);
+                        fetchProducts(page, debouncedSearch, sortOrder); // Refrescar la lista
+                    }}
+                />
+            )}
+
+            {/* Modal de Confirmación de Eliminación */}
+            {deletingProduct && (
+                <DeleteConfirmationModal
+                    productName={deletingProduct.name}
+                    onClose={() => setDeletingProduct(null)}
+                    onConfirm={confirmDelete}
+                    loading={isDeleting}
+                />
+            )}
         </div>
     );
 };

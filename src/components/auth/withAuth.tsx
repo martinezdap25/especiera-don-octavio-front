@@ -39,8 +39,11 @@ const withAuth = <P extends object>(
 
     if (isLoading) {
       return (
-        <div className="flex justify-center items-center min-h-[calc(100vh-5rem)]">
+        <div className="flex flex-col justify-center items-center min-h-[calc(100vh-5rem)] bg-gray-100">
           <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-lg font-semibold text-amber-800">
+            Cargando...
+          </p>
         </div>
       );
     }
