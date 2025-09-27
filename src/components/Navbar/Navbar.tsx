@@ -72,10 +72,11 @@ export default function Navbar() {
                         {!isAuthenticated && status !== "loading" && (
                             <Link
                                 href="/cart"
-                                className={`relative p-2 rounded-full transition-all duration-300 ease-in-out ${pathname === "/cart"
+                                className={`relative p-2 rounded-full transition-all duration-300 ease-in-out ${
+                                    pathname === "/cart"
                                         ? "bg-amber-500 text-white"
                                         : "text-amber-900 hover:text-white hover:bg-amber-500"
-                                    }`}
+                                }`}
                             >
                                 <FiShoppingCart size={26} />
                                 {totalItems > 0 && (
@@ -90,20 +91,22 @@ export default function Navbar() {
                         <div className="relative" ref={dropdownRef}>
                             <button
                                 onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                                className={`p-2 rounded-full transition-all duration-300 ease-in-out ${isUserDropdownOpen
+                                className={`p-2 rounded-full transition-all duration-300 ease-in-out ${
+                                    isUserDropdownOpen
                                         ? "bg-amber-500 text-white"
                                         : "text-amber-900 hover:text-white hover:bg-amber-500"
-                                    }`}
+                                }`}
                             >
                                 <FiUser size={26} />
                             </button>
 
                             {/* Dropdown */}
                             <div
-                                className={`absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-amber-200 z-10 transform origin-top-right transition-all duration-200 ${isUserDropdownOpen
+                                className={`absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-md border border-amber-200 z-10 transform origin-top-right transition-all duration-200 ${
+                                    isUserDropdownOpen
                                         ? "scale-100 opacity-100"
                                         : "scale-95 opacity-0 pointer-events-none"
-                                    }`}
+                                }`}
                             >
                                 {isAuthenticated ? (
                                     <>
@@ -112,7 +115,9 @@ export default function Navbar() {
                                             <p className="text-sm font-semibold text-amber-950 truncate">
                                                 {user?.name || "Usuario"}
                                             </p>
-                                            <p className="text-xs text-gray-500 truncate">{user?.email || "Cargando..."}</p>
+                                            <p className="text-xs text-gray-500 truncate">
+                                                {user?.email || "Cargando..."}
+                                            </p>
                                         </div>
                                         <Link
                                             href="/profile"
@@ -165,14 +170,19 @@ export default function Navbar() {
 
             {/* Panel de menú móvil */}
             <div
-                className={`md:hidden bg-amber-100 border-t border-amber-200 overflow-hidden transition-all duration-300 ease-in-out ${isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-                    }`}
+                className={`absolute left-0 right-0 top-20 md:hidden bg-amber-100 overflow-hidden transition-[max-height] duration-500 ease-in-out ${
+                    isMenuOpen ? "max-h-96" : "max-h-0"
+                }`}
             >
                 <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                     <Link
                         href="/"
                         onClick={() => setIsMenuOpen(false)}
-                        className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${pathname === "/" ? "bg-amber-200 text-amber-950" : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"}`}
+                        className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                            pathname === "/"
+                                ? "bg-amber-200 text-amber-950"
+                                : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"
+                        }`}
                     >
                         Productos
                     </Link>
@@ -182,12 +192,18 @@ export default function Navbar() {
                                 <p className="text-sm font-semibold text-amber-950 truncate">
                                     {user?.name || "Usuario"}
                                 </p>
-                                <p className="text-xs text-gray-500 truncate">{user?.email || "Cargando..."}</p>
+                                <p className="text-xs text-gray-500 truncate">
+                                    {user?.email || "Cargando..."}
+                                </p>
                             </div>
                             <Link
                                 href="/dashboard"
                                 onClick={() => setIsMenuOpen(false)}
-                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${pathname.startsWith("/dashboard") ? "bg-amber-200 text-amber-950" : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"}`}
+                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                                    pathname.startsWith("/dashboard")
+                                        ? "bg-amber-200 text-amber-950"
+                                        : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"
+                                }`}
                             >
                                 Dashboard
                             </Link>
@@ -195,7 +211,11 @@ export default function Navbar() {
                             <Link
                                 href="/cart"
                                 onClick={() => setIsMenuOpen(false)}
-                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${pathname === "/cart" ? "bg-amber-200 text-amber-950" : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"}`}
+                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                                    pathname === "/cart"
+                                        ? "bg-amber-200 text-amber-950"
+                                        : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"
+                                }`}
                             >
                                 Carrito
                             </Link>
@@ -213,7 +233,11 @@ export default function Navbar() {
                             <Link
                                 href="/cart"
                                 onClick={() => setIsMenuOpen(false)}
-                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${pathname === "/cart" ? "bg-amber-200 text-amber-950" : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"}`}
+                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                                    pathname === "/cart"
+                                        ? "bg-amber-200 text-amber-950"
+                                        : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"
+                                }`}
                             >
                                 Carrito
                             </Link>
@@ -221,7 +245,11 @@ export default function Navbar() {
                             <Link
                                 href="/login"
                                 onClick={() => setIsMenuOpen(false)}
-                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${pathname === "/login" ? "bg-amber-200 text-amber-950" : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"}`}
+                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                                    pathname === "/login"
+                                        ? "bg-amber-200 text-amber-950"
+                                        : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"
+                                }`}
                             >
                                 ¿Eres admin?
                             </Link>
