@@ -5,12 +5,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useUser } from "@/context/UserContext";
-import { usePathname } from "next/navigation"; // 👈 para saber la ruta actual
+import { usePathname } from "next/navigation";
 import { FiShoppingCart, FiMenu, FiX, FiUser } from "react-icons/fi";
 
 export default function Navbar() {
     const { cart } = useCart();
-    const { token, logout } = useUser();
+    const { status, isAuthenticated, isLoading, user, logout } = useUser();
     const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
@@ -53,13 +53,17 @@ export default function Navbar() {
 
                     {/* Menú de escritorio */}
                     <div className="hidden md:flex items-center space-x-6 relative">
-                        {/* Carrito solo si NO hay dueño logueado */}
-                        {!token && (
+                        {isLoading && (
+                            <div className="w-6 h-6 border-2 border-amber-900 border-t-transparent rounded-full animate-spin"></div>
+                        )}
+
+                        {/* Carrito solo si el usuario NO está autenticado */}
+                        {!isAuthenticated && status !== "loading" && (
                             <Link
                                 href="/cart"
                                 className={`relative p-2 rounded-full transition-all duration-300 ease-in-out ${pathname === "/cart"
-                                    ? "bg-amber-500 text-white"
-                                    : "text-amber-900 hover:text-white hover:bg-amber-500"
+                                        ? "bg-amber-500 text-white"
+                                        : "text-amber-900 hover:text-white hover:bg-amber-500"
                                     }`}
                             >
                                 <FiShoppingCart size={26} />
@@ -76,8 +80,8 @@ export default function Navbar() {
                             <button
                                 onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
                                 className={`p-2 rounded-full transition-all duration-300 ease-in-out ${isUserDropdownOpen
-                                    ? "bg-amber-500 text-white"
-                                    : "text-amber-900 hover:text-white hover:bg-amber-500"
+                                        ? "bg-amber-500 text-white"
+                                        : "text-amber-900 hover:text-white hover:bg-amber-500"
                                     }`}
                             >
                                 <FiUser size={26} />
@@ -86,15 +90,18 @@ export default function Navbar() {
                             {/* Dropdown */}
                             <div
                                 className={`absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-amber-200 z-10 transform origin-top-right transition-all duration-200 ${isUserDropdownOpen
-                                    ? "scale-100 opacity-100"
-                                    : "scale-95 opacity-0 pointer-events-none"
+                                        ? "scale-100 opacity-100"
+                                        : "scale-95 opacity-0 pointer-events-none"
                                     }`}
                             >
-                                {token ? (
+                                {isAuthenticated ? (
                                     <>
-                                        {/* Mostrar email arriba */}
-                                        <div className="px-4 py-2 text-sm text-gray-500 border-b border-amber-100">
-                                            {JSON.parse(atob(token.split(".")[1])).email}
+                                        {/* Email arriba */}
+                                        <div className="px-4 py-3 border-b border-amber-100">
+                                            <p className="text-sm font-semibold text-amber-950 truncate">
+                                                {user?.name || "Usuario"}
+                                            </p>
+                                            <p className="text-xs text-gray-500 truncate">{user?.email || "Cargando..."}</p>
                                         </div>
                                         <Link
                                             href="/profile"
@@ -145,17 +152,19 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Panel de menú móvil con animación */}
+            {/* Panel de menú móvil */}
             <div
                 className={`md:hidden bg-amber-100 border-t border-amber-200 overflow-hidden transition-all duration-300 ease-in-out ${isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                     }`}
             >
                 <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    {token ? (
+                    {isAuthenticated ? (
                         <>
-                            {/* Email en mobile también */}
-                            <div className="px-3 py-2 text-sm text-gray-500 border-b border-amber-200">
-                                {JSON.parse(atob(token.split(".")[1])).email}
+                            <div className="px-3 py-2 border-b border-amber-200">
+                                <p className="text-sm font-semibold text-amber-950 truncate">
+                                    {user?.name || "Usuario"}
+                                </p>
+                                <p className="text-xs text-gray-500 truncate">{user?.email || "Cargando..."}</p>
                             </div>
                             <Link
                                 href="/profile"

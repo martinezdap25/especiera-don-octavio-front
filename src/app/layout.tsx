@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import "./globals.css";
 import { Geist } from 'next/font/google'
 import { ProductProvider } from "@/context/ProductContext";
-import SessionAuthProvider from "@/context/SessionAuthProvider";
 import { UserProvider } from "@/context/UserContext";
 import LayoutClient from "@/components/LayoutClient";
 
@@ -24,17 +23,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={geist.className}>
       <body className="flex flex-col min-h-screen">
-        <SessionAuthProvider>
-          <UserProvider>
-            <ProductProvider>
-              <CartProvider>
-                <LayoutClient>
-                  {children}
-                </LayoutClient>
-              </CartProvider>
-            </ProductProvider>
-          </UserProvider>
-        </SessionAuthProvider>
+        <UserProvider>
+          <ProductProvider>
+            <CartProvider>
+              <LayoutClient>
+                {children}
+              </LayoutClient>
+            </CartProvider>
+          </ProductProvider>
+        </UserProvider>
       </body>
     </html>
   );

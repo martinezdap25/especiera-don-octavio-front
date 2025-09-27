@@ -1,12 +1,25 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { createContext, useContext, ReactNode, useEffect } from "react";
-import { useSession, signIn, signOut, SessionProvider } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import React, {
+  createContext,
+  useContext,
+  ReactNode,
+  useEffect,
+  useCallback,
+} from "react";
+import { useSession, signOut, SessionProvider } from "next-auth/react";
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 
 interface UserContextType {
+  user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  status: "loading" | "authenticated" | "unauthenticated";
+  isAuthenticated: boolean;
+  isLoading: boolean;
   logout: () => void;
 }
 
@@ -14,47 +27,50 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 const UserProviderContent: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { data: session, status } = useSession();
-  const router = useRouter();
+  const isAuthenticated = status === "authenticated";
+  const isLoading = status === "loading";
 
-  const token = (session?.user as any)?.access_token ?? null;
+  const user = session?.user ?? null;
+  const token = session?.accessToken ?? null;
+
+  const logout = useCallback(() => {
+    localStorage.removeItem("token");
+    signOut({ callbackUrl: "/login" });
+  }, []);
 
   useEffect(() => {
-    console.log("[UserContext] Status changed:", status, "Session:", session);
     if (status === "authenticated" && token) {
       localStorage.setItem("token", token);
-    }
-    if (status === "unauthenticated") {
+    } else if (status === "unauthenticated") {
       localStorage.removeItem("token");
     }
-  }, [session, status, token]);
+  }, [status, token]);
 
-  const login = async (email: string, password: string) => {
-    console.log("[UserContext] 1. Iniciando login para:", email);
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    console.log("[UserContext] 2. Resultado de signIn:", result);
-
-    if (result?.ok && !result.error) {
-      console.log("[UserContext] 3. Login exitoso. Redirigiendo a /dashboard...");
-      router.push("/dashboard");
-    } else {
-      console.error("[UserContext] 3. Falló el login:", result?.error);
-      throw new Error(result?.error || "Error al iniciar sesión");
-    }
-  };
-
-  const logout = () => {
-    console.log("[UserContext] Iniciando logout...");
-    localStorage.removeItem("token");
-    signOut({ callbackUrl: "/" });
-  };
+  // Listener para errores de autenticación desde Axios
+  useEffect(() => {
+    const handleAuthError = () => {
+      console.error("❌ Evento 'auth-error' capturado → cerrando sesión");
+      if (isAuthenticated) {
+        logout();
+      }
+    };
+    window.addEventListener("auth-error", handleAuthError);
+    return () => {
+      window.removeEventListener("auth-error", handleAuthError);
+    };
+  }, [isAuthenticated, logout]);
 
   return (
-    <UserContext.Provider value={{ token, login, logout }}>
+    <UserContext.Provider
+      value={{
+        user,
+        token,
+        status,
+        isAuthenticated,
+        isLoading,
+        logout,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

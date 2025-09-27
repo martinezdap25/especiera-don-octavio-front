@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useState, FormEvent } from "react";
 import { FiUser, FiLock } from "react-icons/fi";
 import Image from "next/image";
+import { useUser } from "@/context/UserContext";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -19,19 +20,19 @@ export default function Login() {
         setError("");
         setLoading(true);
 
-        const response = await signIn("credentials", {
+        const result = await signIn("credentials", {
             email,
             password,
-            redirect: false,
+            redirect: false, // manejamos el error aquí
         });
 
-        setLoading(false);
-
-        if (response?.error) {
+        if (result?.error) {
             setError("Usuario o contraseña incorrectos.");
-        } else if (response?.ok) {
+        } else if (result?.ok) {
             router.push("/dashboard");
         }
+
+        setLoading(false); // ✅
     };
 
     return (

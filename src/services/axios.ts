@@ -32,10 +32,11 @@ instance.interceptors.response.use(
             error.response &&
             (error.response.status === 401 || error.response.status === 403)
         ) {
-            console.error("Error de autenticación, redirigiendo al login.");
-            localStorage.removeItem("token");
+            // En lugar de una redirección forzada, disparamos un evento personalizado.
+            // El UserContext escuchará este evento para cerrar la sesión de forma controlada.
             if (typeof window !== "undefined") {
-                window.location.href = "/login";
+                localStorage.removeItem("token");
+                window.dispatchEvent(new CustomEvent('auth-error', { detail: { status: error.response.status } }));
             }
         }
         return Promise.reject(error);

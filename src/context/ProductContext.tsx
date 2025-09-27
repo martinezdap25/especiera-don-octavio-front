@@ -11,6 +11,7 @@ import {
   useRef,
 } from "react";
 import { productService } from "@/services/productService";
+import { useUser } from "./UserContext";
 
 export type Product = {
     id: number;
@@ -46,6 +47,7 @@ type ProductContextType = {
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const ProductProvider = ({ children }: { children: ReactNode }) => {
+    const { isAuthenticated } = useUser();
     const [products, setProducts] = useState<Product[]>([]);
     const [page, setPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
@@ -123,8 +125,13 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
 
     // Efecto para la carga inicial de productos
     useEffect(() => {
-        fetchProducts(1);
-    }, [fetchProducts]);
+        if (isAuthenticated) {
+            fetchProducts(1);
+        } else {
+            // Limpiar productos si el usuario se desautentica
+            setProducts([]);
+        }
+    }, [isAuthenticated, fetchProducts]);
 
     // Efecto para el prefetching de páginas adyacentes
     useEffect(() => {
@@ -144,7 +151,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
         prefetch(page + 1, currentSearch, currentSort);
         prefetch(page - 1, currentSearch, currentSort);
 
-    }, [page, lastPage, currentSearch, currentSort]); // Se ejecuta cuando cambia la página o los filtros
+    }, [page, lastPage, currentSearch, currentSort, getCacheKey]); // Se ejecuta cuando cambia la página o los filtros
 
     return (
         <ProductContext.Provider
