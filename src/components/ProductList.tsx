@@ -27,7 +27,7 @@ export default function ProductList() {
 
   // dropdown filtros
   const [showFilters, setShowFilters] = useState(false);
-  const [sort, setSort] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc'>('name_asc');
+  const [sort, setSort] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'createdAt_desc'>('name_asc');
 
   const debouncedSearch = useDebounce(search, 500);
 
@@ -61,7 +61,7 @@ export default function ProductList() {
     handleCloseModal();
   };
 
-  const handleSelectFilter = (filter: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc') => {
+  const handleSelectFilter = (filter: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'createdAt_desc') => {
     setSort(filter);
     setShowFilters(false);
   };

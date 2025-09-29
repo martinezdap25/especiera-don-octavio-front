@@ -39,7 +39,7 @@ type ProductContextType = {
     fetchProducts: (
         page?: number,
         search?: string,
-        sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc'
+        sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'createdAt_desc'
     ) => Promise<void>;
     invalidateCache: () => void;
 };
@@ -56,7 +56,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
     const [error, setError] = useState<string | null>(null);
     // Guardamos los filtros actuales en el estado para que el prefetching los pueda usar
     const [currentSearch, setCurrentSearch] = useState<string | undefined>();
-    const [currentSort, setCurrentSort] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc'>('name_asc');
+    const [currentSort, setCurrentSort] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'createdAt_desc'>('createdAt_desc');
 
     // --- Lógica de Cache y Prefetching ---
     const cache = useRef(new Map<string, PaginatedResponse<Product>>());
@@ -65,8 +65,8 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
     const getCacheKey = (
         page: number,
         search?: string,
-        sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc'
-    ) => `page=${page}&search=${search || ''}&sort=${sort || 'name_asc'}`;
+        sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'createdAt_desc'
+    ) => `page=${page}&search=${search || ''}&sort=${sort || 'createdAt_desc'}`;
 
     // Función para limpiar el caché, la usaremos después de mutaciones
     const invalidateCache = useCallback(() => {
@@ -77,10 +77,10 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
         async (
             currentPage = 1,
             search?: string,
-            sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc'
+            sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'createdAt_desc'
         ) => {
             setCurrentSearch(search);
-            setCurrentSort(sort || 'name_asc');
+            setCurrentSort(sort || 'createdAt_desc');
 
             const cacheKey = getCacheKey(currentPage, search, sort);
 
@@ -135,7 +135,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
 
     // Efecto para el prefetching de páginas adyacentes
     useEffect(() => {
-        const prefetch = async (pageToPrefetch: number, search?: string, sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc') => {
+        const prefetch = async (pageToPrefetch: number, search?: string, sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'createdAt_desc') => {
             // No hacer prefetch si está fuera de los límites
             if (pageToPrefetch <= 0 || pageToPrefetch > lastPage) return;
 

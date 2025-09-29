@@ -18,7 +18,7 @@ type GetAllProductsParams = {
     page?: number;
     limit?: number;
     search?: string;
-    sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc';
+    sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'createdAt_desc';
 };
 
 export const productService = {

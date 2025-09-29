@@ -33,7 +33,7 @@ const ProductSkeleton = () => (
 const Dashboard = () => {
     const { products, page, lastPage, total, loading, error, fetchProducts, invalidateCache } = useProducts();
     const [searchTerm, setSearchTerm] = useState("");
-    const [sortOrder, setSortOrder] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc'>('name_asc');
+    const [sortOrder, setSortOrder] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'createdAt_desc'>('createdAt_desc');
     const [showFilters, setShowFilters] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [deletingProduct, setDeletingProduct] = useState<Product | null>(null); // Estado para el producto a eliminar
@@ -78,7 +78,7 @@ const Dashboard = () => {
         setEditingProduct(product);
     };
 
-    const handleSelectFilter = (filter: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc') => {
+    const handleSelectFilter = (filter: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'createdAt_desc') => {
         setSortOrder(filter);
         setShowFilters(false);
     };
@@ -146,7 +146,15 @@ const Dashboard = () => {
                                 overflow-hidden transition-all duration-300 ease-in-out
                                 ${showFilters ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
                         >
-                            <ul className="divide-y divide-gray-200">
+                            <ul className="divide-y divide-amber-100">
+                                <li>
+                                    <button
+                                        className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                                        onClick={() => handleSelectFilter("createdAt_desc")}
+                                    >
+                                        Más nuevos primero
+                                    </button>
+                                </li>
                                 <li>
                                     <button
                                         className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
