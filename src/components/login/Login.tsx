@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { useState, FormEvent } from "react";
 import { FiUser, FiLock } from "react-icons/fi";
 import Image from "next/image";
-import { useUser } from "@/context/UserContext";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 

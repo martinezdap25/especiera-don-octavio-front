@@ -119,13 +119,13 @@ export default function Navbar() {
                                                 {user?.email || "Cargando..."}
                                             </p>
                                         </div>
-                                        <Link
+                                        {/* <Link
                                             href="/profile"
                                             onClick={() => setIsUserDropdownOpen(false)}
                                             className="block px-4 py-2 text-amber-900 hover:bg-amber-100 hover:text-amber-950 transition-colors duration-200"
                                         >
                                             Mi perfil
-                                        </Link>
+                                        </Link> */}
                                         <Link
                                             href="/dashboard"
                                             onClick={() => setIsUserDropdownOpen(false)}
