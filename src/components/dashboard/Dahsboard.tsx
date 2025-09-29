@@ -202,7 +202,7 @@ const Dashboard = () => {
                 </div>
             ) : error ? (
                 <div className="text-center p-4 text-red-500">{error}</div>
-            ) : (
+            ) : products.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
                     {products.map((product) => (
                         <div
@@ -237,6 +237,18 @@ const Dashboard = () => {
                             </div>
                         </div>
                     ))}
+                </div>
+            ) : debouncedSearch ? ( // 3. Si no hay productos y se está buscando algo
+                <div className="col-span-full flex flex-col items-center justify-center p-10 text-center text-gray-500 bg-amber-50/50 rounded-lg border-2 border-dashed border-amber-200">
+                    <FiSearch size={40} className="mb-4 text-amber-500" />
+                    <h3 className="text-xl font-semibold text-amber-800">No se encontraron resultados</h3>
+                    <p className="text-sm text-gray-500 mt-1">Intenta con otro término de búsqueda.</p>
+                </div>
+            ) : ( // 4. Si no hay productos y no se está buscando nada
+                <div className="col-span-full flex flex-col items-center justify-center p-10 text-center text-gray-500 bg-amber-50/50 rounded-lg border-2 border-dashed border-amber-200">
+                    <FiPlusCircle size={40} className="mb-4 text-green-600" />
+                    <h3 className="text-xl font-semibold text-amber-800">¡Aún no hay productos!</h3>
+                    <p className="text-sm text-gray-500 mt-1">Haz clic en Crear para añadir tu primer producto.</p>
                 </div>
             )}
 
