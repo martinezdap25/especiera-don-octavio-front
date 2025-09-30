@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Product, useProducts } from "@/context/ProductContext";
 import { Toaster, toast } from "react-hot-toast";
-import { FiEdit, FiTrash2, FiPlusCircle, FiSearch, FiChevronDown, FiXCircle } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiPlusCircle, FiSearch, FiChevronDown, FiX } from "react-icons/fi";
 import { FaFilter } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
@@ -170,7 +170,7 @@ const Dashboard = () => {
                                     className="absolute -top-2 -right-2 w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center shadow-md hover:bg-red-700 transition-transform transform hover:scale-110"
                                     title="Limpiar filtros y búsqueda"
                                 >
-                                    <FiXCircle size={14} />
+                                    <FiX size={14} />
                                 </button>
                             )}
                         </div>
@@ -182,7 +182,11 @@ const Dashboard = () => {
                             <ul className="divide-y divide-amber-100">
                                 <li>
                                     <button
-                                        className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                                        className={`w-full text-left px-4 py-2 transition-colors ${
+                                            sortOrder === 'name_asc'
+                                                ? 'bg-amber-100 text-amber-900 font-semibold'
+                                                : 'text-gray-600 hover:bg-amber-50'
+                                        }`}
                                         onClick={() => handleSelectFilter("name_asc")}
                                     >
                                         Nombre (A → Z)
@@ -190,7 +194,11 @@ const Dashboard = () => {
                                 </li>
                                 <li>
                                     <button
-                                        className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                                        className={`w-full text-left px-4 py-2 transition-colors ${
+                                            sortOrder === 'name_desc'
+                                                ? 'bg-amber-100 text-amber-900 font-semibold'
+                                                : 'text-gray-600 hover:bg-amber-50'
+                                        }`}
                                         onClick={() => handleSelectFilter("name_desc")}
                                     >
                                         Nombre (Z → A)
@@ -198,7 +206,11 @@ const Dashboard = () => {
                                 </li>
                                 <li>
                                     <button
-                                        className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                                        className={`w-full text-left px-4 py-2 transition-colors ${
+                                            sortOrder === 'price_asc'
+                                                ? 'bg-amber-100 text-amber-900 font-semibold'
+                                                : 'text-gray-600 hover:bg-amber-50'
+                                        }`}
                                         onClick={() => handleSelectFilter("price_asc")}
                                     >
                                         Precio (menor a mayor)
@@ -206,7 +218,11 @@ const Dashboard = () => {
                                 </li>
                                 <li>
                                     <button
-                                        className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                                        className={`w-full text-left px-4 py-2 transition-colors ${
+                                            sortOrder === 'price_desc'
+                                                ? 'bg-amber-100 text-amber-900 font-semibold'
+                                                : 'text-gray-600 hover:bg-amber-50'
+                                        }`}
                                         onClick={() => handleSelectFilter("price_desc")}
                                     >
                                         Precio (mayor a menor)
