@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useProducts, Product } from "@/context/ProductContext";
+import { useEffect, useState, useRef } from "react";
+import { Product, useProducts } from "@/context/ProductContext";
 import { Toaster, toast } from "react-hot-toast";
-import { FiEdit, FiTrash2, FiPlusCircle, FiSearch, FiChevronDown } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiPlusCircle, FiSearch, FiChevronDown, FiXCircle } from "react-icons/fi";
 import { FaFilter } from "react-icons/fa";
 import Link from "next/link";
 import Image from "next/image";
@@ -39,10 +39,25 @@ const Dashboard = () => {
     const [deletingProduct, setDeletingProduct] = useState<Product | null>(null); // Estado para el producto a eliminar
     const [isDeleting, setIsDeleting] = useState(false); // Estado de carga para la eliminación
     const debouncedSearch = useDebounce(searchTerm, 500);
+    const filtersDropdownRef = useRef<HTMLDivElement>(null); // Ref para el dropdown
 
     useEffect(() => {
         fetchProducts(1, debouncedSearch, sortOrder);
     }, [debouncedSearch, sortOrder, fetchProducts]);
+
+    // Efecto para cerrar el dropdown al hacer clic fuera
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                filtersDropdownRef.current &&
+                !filtersDropdownRef.current.contains(event.target as Node)
+            ) {
+                setShowFilters(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const handlePageChange = (newPage: number) => {
         if (newPage >= 1 && newPage <= lastPage) {
@@ -83,6 +98,12 @@ const Dashboard = () => {
         setShowFilters(false);
     };
 
+    const handleClearFilters = () => {
+        setSearchTerm("");
+        setSortOrder('createdAt_desc');
+        setShowFilters(false);
+    };
+
     return (
         <div className="w-full max-w-5xl mx-auto p-4 md:p-6 bg-white rounded-lg shadow-md">
             <Toaster position="bottom-right" />
@@ -120,7 +141,7 @@ const Dashboard = () => {
                 </form>
 
                 {/* Botones filtros / añadir */}
-                <div className="flex gap-2 w-full sm:w-auto">
+                <div className="flex gap-2 w-full sm:w-auto items-center">
                     {/* Botón Crear Producto */}
                     <Link
                         href="/dashboard/products/new"
@@ -132,29 +153,33 @@ const Dashboard = () => {
                     </Link>
 
                     {/* Dropdown de sort */}
-                    <div className="relative flex-grow sm:flex-grow-0">
-                        <button
-                            onClick={() => setShowFilters(!showFilters)}
-                            className="h-10 w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-2 border border-amber-300 rounded-md bg-white text-gray-900 hover:bg-amber-100 transition-colors"
-                        >
-                            <span className="hidden sm:inline">Filtros</span>
-                            <FaFilter className="sm:hidden" />
-                            <FiChevronDown className={`hidden sm:inline transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
-                        </button>
+                    <div className="relative" ref={filtersDropdownRef}>
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowFilters(!showFilters)}
+                                className="h-10 w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-2 border border-amber-300 rounded-md bg-white text-gray-900 hover:bg-amber-100 transition-colors"
+                            >
+                                <span className="hidden sm:inline">Filtros</span>
+                                <FaFilter className="sm:hidden text-amber-700" />
+                                <FiChevronDown className={`hidden sm:inline transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
+                            </button>
+                            {/* Badge para limpiar filtros */}
+                            {(debouncedSearch || sortOrder !== 'createdAt_desc') && (
+                                <button
+                                    onClick={handleClearFilters}
+                                    className="absolute -top-2 -right-2 w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center shadow-md hover:bg-red-700 transition-transform transform hover:scale-110"
+                                    title="Limpiar filtros y búsqueda"
+                                >
+                                    <FiXCircle size={14} />
+                                </button>
+                            )}
+                        </div>
                         <div
                             className={`absolute right-0 top-full mt-2 w-48 bg-white border border-amber-200 rounded-lg shadow-lg z-10
                                 overflow-hidden transition-all duration-300 ease-in-out
                                 ${showFilters ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
                         >
                             <ul className="divide-y divide-amber-100">
-                                <li>
-                                    <button
-                                        className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
-                                        onClick={() => handleSelectFilter("createdAt_desc")}
-                                    >
-                                        Más nuevos primero
-                                    </button>
-                                </li>
                                 <li>
                                     <button
                                         className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useCart, CartItem } from "@/context/CartContext";
 import { useProducts, Product } from "@/context/ProductContext";
@@ -28,6 +28,7 @@ export default function ProductList() {
   // dropdown filtros
   const [showFilters, setShowFilters] = useState(false);
   const [sort, setSort] = useState<'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'createdAt_desc'>('name_asc');
+  const filterDropdownRef = useRef<HTMLDivElement>(null); // Ref para el dropdown de filtros
 
   const debouncedSearch = useDebounce(search, 500);
 
@@ -42,6 +43,21 @@ export default function ProductList() {
   useEffect(() => {
     fetchProducts(1, debouncedSearch, sort);
   }, [debouncedSearch, sort, fetchProducts]);
+
+  // Efecto para cerrar el dropdown al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        filterDropdownRef.current &&
+        !filterDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowFilters(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSelectProduct = (product: Product) => {
     setSelectedProduct(product);
@@ -115,7 +131,7 @@ export default function ProductList() {
       </div>
 
       {/* Encabezado listado con filtros */}
-      <div className="flex justify-between items-center mb-4 px-2 sm:px-0 relative">
+      <div className="flex justify-between items-center mb-4 px-2 sm:px-0 relative" ref={filterDropdownRef}>
         <h2 className="text-base sm:text-lg font-semibold text-gray-800">
           Listado de productos
         </h2>
