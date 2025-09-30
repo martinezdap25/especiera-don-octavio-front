@@ -153,7 +153,11 @@ export default function ProductList() {
               <ul className="divide-y divide-gray-200">
                 <li>
                   <button
-                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    className={`w-full text-left px-4 py-2 transition-colors ${
+                      sort === 'price_asc'
+                        ? 'bg-amber-100 text-amber-900 font-semibold'
+                        : 'text-gray-600 hover:bg-amber-50'
+                    }`}
                     onClick={() => handleSelectFilter("price_asc")}
                   >
                     Precio más bajo primero
@@ -161,7 +165,11 @@ export default function ProductList() {
                 </li>
                 <li>
                   <button
-                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    className={`w-full text-left px-4 py-2 transition-colors ${
+                      sort === 'price_desc'
+                        ? 'bg-amber-100 text-amber-900 font-semibold'
+                        : 'text-gray-600 hover:bg-amber-50'
+                    }`}
                     onClick={() => handleSelectFilter("price_desc")}
                   >
                     Precio más alto primero
@@ -169,7 +177,11 @@ export default function ProductList() {
                 </li>
                 <li>
                   <button
-                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    className={`w-full text-left px-4 py-2 transition-colors ${
+                      sort === 'name_asc'
+                        ? 'bg-amber-100 text-amber-900 font-semibold'
+                        : 'text-gray-600 hover:bg-amber-50'
+                    }`}
                     onClick={() => handleSelectFilter("name_asc")}
                   >
                     Nombre (A → Z)
@@ -177,7 +189,11 @@ export default function ProductList() {
                 </li>
                 <li>
                   <button
-                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    className={`w-full text-left px-4 py-2 transition-colors ${
+                      sort === 'name_desc'
+                        ? 'bg-amber-100 text-amber-900 font-semibold'
+                        : 'text-gray-600 hover:bg-amber-50'
+                    }`}
                     onClick={() => handleSelectFilter("name_desc")}
                   >
                     Nombre (Z → A)
@@ -203,7 +219,11 @@ export default function ProductList() {
               <ul className="divide-y divide-gray-200">
                 <li>
                   <button
-                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    className={`w-full text-left px-4 py-2 transition-colors ${
+                      sort === 'price_asc'
+                        ? 'bg-amber-100 text-amber-900 font-semibold'
+                        : 'text-gray-600 hover:bg-amber-50'
+                    }`}
                     onClick={() => handleSelectFilter("price_asc")}
                   >
                     Precio más bajo primero
@@ -211,7 +231,11 @@ export default function ProductList() {
                 </li>
                 <li>
                   <button
-                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    className={`w-full text-left px-4 py-2 transition-colors ${
+                      sort === 'price_desc'
+                        ? 'bg-amber-100 text-amber-900 font-semibold'
+                        : 'text-gray-600 hover:bg-amber-50'
+                    }`}
                     onClick={() => handleSelectFilter("price_desc")}
                   >
                     Precio más alto primero
@@ -219,7 +243,11 @@ export default function ProductList() {
                 </li>
                 <li>
                   <button
-                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    className={`w-full text-left px-4 py-2 transition-colors ${
+                      sort === 'name_asc'
+                        ? 'bg-amber-100 text-amber-900 font-semibold'
+                        : 'text-gray-600 hover:bg-amber-50'
+                    }`}
                     onClick={() => handleSelectFilter("name_asc")}
                   >
                     Nombre (A → Z)
@@ -227,7 +255,11 @@ export default function ProductList() {
                 </li>
                 <li>
                   <button
-                    className="w-full text-left px-4 py-2 hover:bg-amber-50 text-gray-600"
+                    className={`w-full text-left px-4 py-2 transition-colors ${
+                      sort === 'name_desc'
+                        ? 'bg-amber-100 text-amber-900 font-semibold'
+                        : 'text-gray-600 hover:bg-amber-50'
+                    }`}
                     onClick={() => handleSelectFilter("name_desc")}
                   >
                     Nombre (Z → A)
