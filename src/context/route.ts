@@ -2,6 +2,30 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+async function refreshAccessToken(token: any) {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh_token: token.refreshToken }),
+    });
+
+    const refreshed = await res.json();
+
+    if (!res.ok) throw refreshed;
+
+    return {
+      ...token,
+      accessToken: refreshed.access_token,
+      refreshToken: refreshed.refresh_token ?? token.refreshToken,
+      accessTokenExpires: Date.now() + refreshed.expires_in * 1000,
+    };
+  } catch (error) {
+    console.error("Error refrescando token:", error);
+    return { ...token, error: "RefreshAccessTokenError" };
+  }
+}
+
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
@@ -11,53 +35,50 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials.password) {
-          return null;
-        }
-        // Llamada directa al backend de NestJS
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: credentials?.email,
-            password: credentials?.password,
-          }),
+          body: JSON.stringify(credentials),
         });
 
         const user = await res.json();
 
-        // Si la respuesta es OK y contiene el access_token, devolvemos el objeto.
-        // NextAuth lo pasará al callback 'jwt'.
         if (res.ok && user?.access_token) {
-          return user;
+          return {
+            accessToken: user.access_token,
+            refreshToken: user.refresh_token,
+            accessTokenExpires: Date.now() + user.expires_in * 1000, // backend debe mandarte expires_in
+            email: user.email,
+          };
         }
-
         return null;
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // 'user' solo está disponible en el primer login.
-      // Si es el inicio de sesión, decodificamos y guardamos el email.
-      if (user && (user as any).access_token) {
-        const userWithToken = user as any;
-        token.accessToken = userWithToken.access_token;
-        try {
-          const decoded = JSON.parse(Buffer.from(userWithToken.access_token.split('.')[1], 'base64').toString());
-          token.email = decoded.email;
-        } catch (error) {
-          console.error("Error decodificando el token:", error);
-          token.email = "";
-        }
+      // Primer login
+      if (user) {
+        return {
+          accessToken: (user as any).accessToken,
+          refreshToken: (user as any).refreshToken,
+          accessTokenExpires: (user as any).accessTokenExpires,
+          email: (user as any).email,
+        };
       }
-      // En las siguientes llamadas, 'token' ya tendrá el email
-      // y el accessToken, por lo que solo lo retornamos.
-      return token;
+
+      // Si el token todavía no expiró, lo devolvemos
+      if (Date.now() < (token.accessTokenExpires as number)) {
+        return token;
+      }
+
+      // Si expiró, intentamos refrescar
+      return await refreshAccessToken(token);
     },
     async session({ session, token }) {
-      // Ahora solo pasamos los datos que ya están en el token a la sesión del cliente.
       session.user.email = token.email as string;
+      (session as any).accessToken = token.accessToken;
+      (session as any).error = token.error; // por si queremos manejar errores en el front
       return session;
     },
   },
