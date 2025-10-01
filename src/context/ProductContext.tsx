@@ -123,7 +123,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
                 setLoading(false);
             }
         },
-        []
+        [getCacheKey]
     );
 
     // Efecto para la carga inicial de productos

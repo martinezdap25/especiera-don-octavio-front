@@ -30,7 +30,7 @@ const UserProviderContent: React.FC<{ children: ReactNode }> = ({ children }) =>
   const isAuthenticated = status === "authenticated";
   const isLoading = status === "loading";
 
-  const user = session?.user ?? null;
+  const user: User | null = (session?.user as User) ?? null;
   const token = session?.accessToken ?? null;
 
   const logout = useCallback(() => {
