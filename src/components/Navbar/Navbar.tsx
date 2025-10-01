@@ -256,17 +256,6 @@ export default function Navbar() {
                         <>
                             <div className="border-t border-amber-200"></div>
                             <Link
-                                href="/cart"
-                                onClick={() => setIsMenuOpen(false)}
-                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${pathname === "/cart"
-                                        ? "bg-amber-200 text-amber-950"
-                                        : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"
-                                    }`}
-                            >
-                                Carrito
-                            </Link>
-                            <div className="border-t border-amber-200"></div>
-                            <Link
                                 href="/login"
                                 onClick={() => setIsMenuOpen(false)}
                                 className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${pathname === "/login"
