@@ -12,7 +12,7 @@ export default function Footer() {
                         <p className="text-sm text-amber-100/80">Condimentos frescos y de calidad.</p>
                         <div className="flex items-center justify-center md:justify-start gap-2 mt-2 text-amber-100/80">
                             <FiPhone size={14} />
-                            <span>+54 9 385 302-3468</span>
+                            <span>+54 9 385 476-3310</span>
                         </div>
                     </div>
 

@@ -35,7 +35,7 @@ export default function Cart() {
 
     const handleFinalizeOrder = useCallback(
         (deliveryMethod: "pickup" | "delivery", address: string) => {
-            const phoneNumber = "5493853023468"; // Reemplaza con tu número de WhatsApp
+            const phoneNumber = "5493854763310"; // Reemplaza con tu número de WhatsApp
             setIsModalOpen(false);
 
             // 🔹 Agregar info de entrega
