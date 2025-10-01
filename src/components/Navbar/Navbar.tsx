@@ -55,11 +55,10 @@ export default function Navbar() {
                     <div className="hidden md:flex items-center space-x-6 relative">
                         <Link
                             href="/"
-                            className={`p-2 rounded-full transition-all duration-300 ease-in-out ${
-                                pathname === "/"
+                            className={`p-2 rounded-full transition-all duration-300 ease-in-out ${pathname === "/"
                                     ? "bg-amber-500 text-white"
                                     : "text-amber-900 hover:text-white hover:bg-amber-500"
-                            }`}
+                                }`}
                         >
                             <FiGrid size={26} />
                         </Link>
@@ -72,11 +71,10 @@ export default function Navbar() {
                         {!isAuthenticated && status !== "loading" && (
                             <Link
                                 href="/cart"
-                                className={`relative p-2 rounded-full transition-all duration-300 ease-in-out ${
-                                    pathname === "/cart"
+                                className={`relative p-2 rounded-full transition-all duration-300 ease-in-out ${pathname === "/cart"
                                         ? "bg-amber-500 text-white"
                                         : "text-amber-900 hover:text-white hover:bg-amber-500"
-                                }`}
+                                    }`}
                             >
                                 <FiShoppingCart size={26} />
                                 {totalItems > 0 && (
@@ -91,25 +89,38 @@ export default function Navbar() {
                         <div className="relative" ref={dropdownRef}>
                             <button
                                 onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                                className={`p-2 rounded-full transition-all duration-300 ease-in-out ${
-                                    isUserDropdownOpen
+                                className={`p-2 rounded-full transition-all duration-300 ease-in-out ${isUserDropdownOpen
                                         ? "bg-amber-500 text-white"
                                         : "text-amber-900 hover:text-white hover:bg-amber-500"
-                                }`}
+                                    }`}
                             >
                                 <FiUser size={26} />
                             </button>
 
                             {/* Dropdown */}
                             <div
-                                className={`absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-md border border-amber-200 z-10 transform origin-top-right transition-all duration-200 ${
-                                    isUserDropdownOpen
+                                className={`absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-md border border-amber-200 z-10 transform origin-top-right transition-all duration-200 ${isUserDropdownOpen
                                         ? "scale-100 opacity-100"
                                         : "scale-95 opacity-0 pointer-events-none"
-                                }`}
+                                    }`}
                             >
                                 {isAuthenticated ? (
                                     <>
+                                        <Link
+                                            href="/"
+                                            onClick={() => setIsUserDropdownOpen(false)}
+                                            className="block px-4 py-2 text-amber-900 hover:bg-amber-100 hover:text-amber-950 transition-colors duration-200"
+                                        >
+                                            Productos
+                                        </Link>
+                                        <Link
+                                            href="/cart"
+                                            onClick={() => setIsUserDropdownOpen(false)}
+                                            className="block px-4 py-2 text-amber-900 hover:bg-amber-100 hover:text-amber-950 transition-colors duration-200"
+                                        >
+                                            Carrito
+                                        </Link>
+                                        <div className="border-t border-amber-100 my-1"></div>
                                         {/* Email arriba */}
                                         <div className="px-4 py-3 border-b border-amber-100">
                                             <p className="text-sm font-semibold text-amber-950 truncate">
@@ -144,13 +155,30 @@ export default function Navbar() {
                                         </button>
                                     </>
                                 ) : (
-                                    <Link
-                                        href="/login"
-                                        onClick={() => setIsUserDropdownOpen(false)}
-                                        className="block px-4 py-2 text-amber-900 hover:bg-amber-100 hover:text-amber-950 transition-colors duration-200"
-                                    >
-                                        ¿Eres admin?
-                                    </Link>
+                                    <>
+                                        <Link
+                                            href="/"
+                                            onClick={() => setIsUserDropdownOpen(false)}
+                                            className="block px-4 py-2 text-amber-900 hover:bg-amber-100 hover:text-amber-950 transition-colors duration-200"
+                                        >
+                                            Productos
+                                        </Link>
+                                        <Link
+                                            href="/cart"
+                                            onClick={() => setIsUserDropdownOpen(false)}
+                                            className="block px-4 py-2 text-amber-900 hover:bg-amber-100 hover:text-amber-950 transition-colors duration-200"
+                                        >
+                                            Carrito
+                                        </Link>
+                                        <div className="border-t border-amber-100 my-1"></div>
+                                        <Link
+                                            href="/login"
+                                            onClick={() => setIsUserDropdownOpen(false)}
+                                            className="block px-4 py-2 text-amber-900 hover:bg-amber-100 hover:text-amber-950 transition-colors duration-200"
+                                        >
+                                            ¿Eres admin?
+                                        </Link>
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -170,21 +198,30 @@ export default function Navbar() {
 
             {/* Panel de menú móvil */}
             <div
-                className={`absolute left-0 right-0 top-20 md:hidden bg-amber-100 overflow-hidden transition-[max-height] duration-500 ease-in-out ${
-                    isMenuOpen ? "max-h-96" : "max-h-0"
-                }`}
+                className={`absolute left-0 right-0 top-20 md:hidden bg-amber-100 overflow-hidden transition-[max-height] duration-500 ease-in-out ${isMenuOpen ? "max-h-96" : "max-h-0"
+                    }`}
             >
                 <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                     <Link
                         href="/"
                         onClick={() => setIsMenuOpen(false)}
-                        className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                            pathname === "/"
+                        className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${pathname === "/"
                                 ? "bg-amber-200 text-amber-950"
                                 : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"
-                        }`}
+                            }`}
                     >
                         Productos
+                    </Link>
+                    <div className="border-t border-amber-200"></div>
+                    <Link
+                        href="/cart"
+                        onClick={() => setIsMenuOpen(false)}
+                        className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${pathname === "/cart"
+                                ? "bg-amber-200 text-amber-950"
+                                : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"
+                            }`}
+                    >
+                        Carrito
                     </Link>
                     {isAuthenticated ? (
                         <>
@@ -199,26 +236,14 @@ export default function Navbar() {
                             <Link
                                 href="/dashboard"
                                 onClick={() => setIsMenuOpen(false)}
-                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                                    pathname.startsWith("/dashboard")
+                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${pathname.startsWith("/dashboard")
                                         ? "bg-amber-200 text-amber-950"
                                         : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"
-                                }`}
+                                    }`}
                             >
                                 Dashboard
                             </Link>
-                            <div className="border-t border-amber-200"></div>
-                            <Link
-                                href="/cart"
-                                onClick={() => setIsMenuOpen(false)}
-                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                                    pathname === "/cart"
-                                        ? "bg-amber-200 text-amber-950"
-                                        : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"
-                                }`}
-                            >
-                                Carrito
-                            </Link>
+
                             <div className="border-t border-amber-200"></div>
                             <button
                                 onClick={logout}
@@ -233,11 +258,10 @@ export default function Navbar() {
                             <Link
                                 href="/cart"
                                 onClick={() => setIsMenuOpen(false)}
-                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                                    pathname === "/cart"
+                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${pathname === "/cart"
                                         ? "bg-amber-200 text-amber-950"
                                         : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"
-                                }`}
+                                    }`}
                             >
                                 Carrito
                             </Link>
@@ -245,11 +269,10 @@ export default function Navbar() {
                             <Link
                                 href="/login"
                                 onClick={() => setIsMenuOpen(false)}
-                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                                    pathname === "/login"
+                                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${pathname === "/login"
                                         ? "bg-amber-200 text-amber-950"
                                         : "text-amber-900 hover:bg-amber-200 hover:text-amber-950"
-                                }`}
+                                    }`}
                             >
                                 ¿Eres admin?
                             </Link>
