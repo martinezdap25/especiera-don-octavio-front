@@ -63,7 +63,8 @@ const handler = NextAuth({
           accessToken: (user as any).accessToken,
           refreshToken: (user as any).refreshToken,
           accessTokenExpires: (user as any).accessTokenExpires,
-          email: (user as any).email,
+          // Si user.email es null, lo convertimos a undefined para que coincida con el tipo del token.
+          email: (user as any).email ?? undefined,
         };
       }
 

@@ -62,12 +62,15 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
     const cache = useRef(new Map<string, PaginatedResponse<Product>>());
 
     // Genera una clave única para el caché basada en los filtros actuales
-    const getCacheKey = (
-        page: number,
-        search?: string,
-        sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'createdAt_desc'
-    ) => `page=${page}&search=${search || ''}&sort=${sort || 'createdAt_desc'}`;
-
+    const getCacheKey = useCallback(
+        (
+            page: number,
+            search?: string,
+            sort?: 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc' | 'createdAt_desc'
+        ) => `page=${page}&search=${search || ''}&sort=${sort || 'createdAt_desc'}`,
+        []
+    );
+    
     // Función para limpiar el caché, la usaremos después de mutaciones
     const invalidateCache = useCallback(() => {
         cache.current.clear();
